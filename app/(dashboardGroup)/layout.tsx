@@ -1,0 +1,18 @@
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/shared/app-sidebar"
+import { getMe } from "@/service/getMe";
+
+export default async function Layout({ children }: { children: React.ReactNode }) {
+    const user = await getMe();
+  return (
+    <SidebarProvider>
+        <AppSidebar user={user}/>
+        <main>
+            <SidebarTrigger />
+            <section className="ml-6">
+                {children}
+            </section>
+        </main>
+    </SidebarProvider>
+  )
+}
