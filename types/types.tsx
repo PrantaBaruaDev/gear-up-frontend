@@ -26,3 +26,10 @@ export type IUser = {
 export type NavbarProps = {
     user : IUser
 }
+
+export interface IUserJwtPayload {
+    id: string;
+    name: string;
+    email: string;
+    role: string | null;
+}
