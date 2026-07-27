@@ -1,9 +1,7 @@
-"use client"
-
-const AdminDashboardPage = () => {
+const DashboardPage = () => {
   return (
-    <div>Admin Dashboard Page</div>
+    <div>Admin DashboardPage</div>
   )
 }
 
-export default AdminDashboardPage
+export default DashboardPage

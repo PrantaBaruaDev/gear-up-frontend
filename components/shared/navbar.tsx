@@ -114,7 +114,7 @@ export function Navbar({user} : NavbarProps) {
                   return (
                     <DropdownMenuItem
                       key={item.action}
-                      onClick={() => handleUserMenuAction(item.action)}
+                      onClick={() => handleUserMenuAction(item.action, user.data)}
                     >
                       <Icon className="w-4 h-4 mr-2" />
                       <span>{item.label}</span>
