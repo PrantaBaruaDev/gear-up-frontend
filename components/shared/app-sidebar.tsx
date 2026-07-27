@@ -39,33 +39,15 @@ import {
   List,
   ShieldAlert,
   UserCheck,
-  LucideIcon
+  LucideIcon,
+  ChevronsUpDown
 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import { NavbarProps } from "@/types/types";
+import { NavbarProps } from "@/lib/types/types";
 import { useUserMenuAction } from "../_actions/handleUserMenuAction";
-
-
-// 1. Define distinct types for sub-items and menu items
-interface NavSubItem {
-  title: string;
-  url: string;
-  icon: LucideIcon;
-}
-
-interface NavItem {
-  title: string;
-  url?: string;
-  icon: LucideIcon;
-  children?: NavSubItem[];
-}
-
-interface NavGroup {
-  groupLabel: string;
-  items: NavItem[];
-}
-
+import { NavGroup } from "@/lib/types/navbar-types";
+import { sidebarMenuItems } from "@/app/(dashboardGroup)/_config/customerSideBarItems";
 
 const footerProfileItems = [
   { title: "Upgrade to Pro", url: "/upgrade-pro", icon: StarIcon, newLine: true },
@@ -76,48 +58,32 @@ const footerProfileItems = [
 export function AppSidebar({ user }: NavbarProps) {
   const { handleUserMenuAction } = useUserMenuAction();
 
-  const getDashboardItem = () => {
-    switch (user.data.role) {
-      case "ADMIN":
-        return { title: "Admin Dashboard", url: "/admin-dashboard", icon: ShieldAlert };
-      case "PROVIDER":
-        return { title: "Provider Dashboard", url: "/provider-dashboard", icon: UserCheck };
-      case "CUSTOMER":
-        return { title: "Customer Dashboard", url: "/dashboard", icon: HomeIcon };
-      default:
-        return { title: "Dashboard", url: "/dashboard", icon: HomeIcon };
-    }
-  };
+  let navGroups: NavGroup[] = [];
 
-  const dashboardLink = getDashboardItem();
-
-  const navGroups: NavGroup[] = [
-    {
-      groupLabel: "Dashboards",
-      items: [dashboardLink], 
-    },
-    {
-      groupLabel: "Management",
-      items: [
-        {
-          title: "Gears",
-          icon: ShoppingBasket,
-          children: [
-            { title: "Gear Item List", url: "/gear-item", icon: List },
-            { title: "Create Gear", url: "/gear-item/create", icon: PlusCircle },
-          ],
-        },
-      ],
-    },
-  ];
+  switch (user?.data?.role) {
+    case "ADMIN":
+      navGroups=sidebarMenuItems.ADMIN;
+      break;
+    case "PROVIDER":
+      navGroups=sidebarMenuItems.PROVIDER;
+      break;
+    case "CUSTOMER":
+      navGroups=sidebarMenuItems.CUSTOMER;
+      break;
+    default:
+      navGroups=[];
+      break
+  }
 
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-2 py-1 font-semibold">
-          <div className="h-6 w-6 rounded bg-primary" />
-          <span>GearUp App</span>
-        </div>
+        <Link href={"/"}>
+          <div className="flex items-center gap-2 px-2 py-1 font-semibold">
+              <div className="h-6 w-6 rounded bg-primary" />
+              <span>GearUp App</span>
+          </div>
+        </Link>
       </SidebarHeader>
 
       <SidebarContent>
@@ -197,6 +163,7 @@ export function AppSidebar({ user }: NavbarProps) {
                         {user?.data?.email ?? "user@example.com"}
                       </span>
                     </div>
+                    <ChevronsUpDown />
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
