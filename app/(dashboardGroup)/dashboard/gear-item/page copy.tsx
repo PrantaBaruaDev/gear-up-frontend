@@ -25,7 +25,7 @@ const GearItems = async() => {
 
   return (
     <>
-      <h2>Customer Gear Items List</h2>
+      <h2>Gear Items List</h2>
       <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
         {gearItems.map((item) => (
           <GearItemListCard key={item.id} 

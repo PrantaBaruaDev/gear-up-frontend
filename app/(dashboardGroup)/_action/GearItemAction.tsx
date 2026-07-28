@@ -78,18 +78,79 @@ export const createGearItem = async (prevState : GearItemState , formData: FormD
 
     const result = await res.json();
         if(result.success){
-        revalidateTag("my-gear-posts", {
+        revalidateTag("my-gear-post", {
             expire : 0
         })
     }
-    console.log("Create POST to the api DEtails result: \n", result);
+    
     return result
 }
 
 export const updateGearItem = async (gearId : string, prevState : GearItemState , formData: FormData) => {
-console.log({
+    console.log("Update Request come data: id= ",{
         gearId
+    },
+    "\nUpdate Form request data: ", formData
+    );
+
+    const title = formData.get("title");
+    const description = formData.get("description");
+    const brand = formData.get("brand");
+    const pricePerDay = Number(formData.get("pricePerDay"));
+    const stock = Number(formData.get("stock"));
+    const availableStock = Number(formData.get("availableStock"));
+    const categoryId = formData.get("categoryId");
+
+    const payload = {
+        title,
+        description,
+        brand,
+        pricePerDay,
+        stock,
+        availableStock,
+        categoryId,
+    }
+
+    const accessToken = await isAccessTokenExist();
+    const userMe = await getMe();
+    let fetchPath = null;
+
+    switch(userMe && userMe.data.role){
+        case "ADMIN":
+            fetchPath= `${process.env.BACKEND_API_URL}/api/admin/gear/${gearId}`;
+            break;
+        case "PROVIDER":
+            fetchPath= `${process.env.BACKEND_API_URL}/api/provider/gear/${gearId}`;
+            break;
+        default:
+            return {
+                success : false,
+                message : "API Route Path not found!"
+            }
+    }
+
+    const res = await fetch(`${fetchPath}`, {
+        method : "PATCH",
+        headers : {
+            Cookie: `accessToken=${accessToken}`,
+            "Content-Type" : "application/json"
+        },
+        body : JSON.stringify(payload)
     });
+
+    const result = await res.json();
+    if(result.success){
+        revalidateTag("my-gear-items", {
+            expire : 0
+        })
+    } else{
+        revalidateTag("my-gear-post", {
+            expire:0
+        })
+    }
+
+    console.log("Create PATCH to the api DEtails result: \n", result);
+    return result
 }
 
 
@@ -188,5 +249,54 @@ export const getSingleGearItem = async(id: string) => {
 
     const result = res.json();
 
+    return result
+}
+
+export const deleteGearItem = async (gearId : string) => {
+    const accessToken = await isAccessTokenExist();
+    const userMe = await getMe();
+    let fetchPath = null;
+
+    if(!accessToken){
+        return {
+            success : false,
+            message : "User not logged in!"
+        }
+    }
+
+    switch(userMe && userMe.data.role){
+        case "ADMIN":
+            fetchPath= `${process.env.BACKEND_API_URL}/api/admin/gear/${gearId}`;
+            break;
+        case "PROVIDER":
+            fetchPath= `${process.env.BACKEND_API_URL}/api/provider/gear/${gearId}`;
+            break;
+        default:
+            return {
+                success : false,
+                message : "API Route Path not found!"
+            }
+    }
+
+    const res = await fetch(`${fetchPath}`, {
+        method : "DELETE",
+        headers : {
+            Cookie: `accessToken=${accessToken}`,
+            "Content-Type" : "application/json"
+        },
+    });
+
+    const result = await res.json();
+    if(result.success){
+        revalidateTag("my-gear-items", {
+            expire : 0
+        })
+    } else{
+        revalidateTag("my-gear-post", {
+            expire: 0
+        })
+    }
+
+    console.log("DELETE to the api DEtails result: \n", result);
     return result
 }

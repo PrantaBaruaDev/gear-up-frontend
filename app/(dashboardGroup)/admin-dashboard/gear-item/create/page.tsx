@@ -13,7 +13,6 @@ const CreateGearItems = async({
 
   if (id) {
     const res = await getSingleGearItem(id);
-    console.log("Update page form data: ", res);
     initialData = res?.data || null;
   }
 
@@ -21,7 +20,7 @@ const CreateGearItems = async({
     <>
       <div>Create Gear Items</div>
       
-      <GearItemFrom />
+      <GearItemFrom initialData={initialData} />
     </>
   )
 }

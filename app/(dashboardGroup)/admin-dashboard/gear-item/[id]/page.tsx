@@ -11,7 +11,6 @@ const CreateGearItems = async({
 
   if (id) {
     const res = await getSingleGearItem(id);
-    console.log("Update page form data: ", res);
     initialData = res?.data || null;
   }
 

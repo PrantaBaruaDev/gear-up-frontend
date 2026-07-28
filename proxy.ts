@@ -1,17 +1,21 @@
-
-import { NextResponse } from 'next/server'
-import { NextRequest } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server';
 import { JwtPayload } from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { jwtUtils } from './utils/jwt';
 import { getNewAccessToken } from './service/refreshToken';
+import { Role } from './lib/types/users-type';
 
 const AUTH_ROUTES = ["/login", "/register"];
-// const PUBLIC_ROUTES = ["/", "/news", "/login", "/register"]
-const PUBLIC_ROUTES = ["/", "/news"]
+const PUBLIC_ROUTES = ["/", "/gears-list"];
 
+const ROLE_BASED_ROUTES: Record<string, string[]> = {
+    '/dashboard': [Role.CUSTOMER],
+    '/admin-dashboard': [Role.ADMIN],
+    '/provider-dashboard': [Role.PROVIDER],
+    '/profile': [Role.ADMIN, Role.CUSTOMER, Role.PROVIDER],
+    '/notification': [Role.ADMIN, Role.CUSTOMER, Role.PROVIDER],
+};
 
-// This function can be marked `async` if using `await` inside
 export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     const cookieStore = await cookies();
@@ -19,21 +23,25 @@ export async function proxy(request: NextRequest) {
     let accessToken = request.cookies.get("accessToken")?.value;
     const refreshToken = request.cookies.get("refreshToken")?.value;
 
-    let decodedAccessToken = accessToken ? jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string) : null;
+    let decodedAccessToken = accessToken 
+        ? jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string) 
+        : null;
 
-    const decodedRefreshToken = refreshToken ? jwtUtils.verifyToken(refreshToken, process.env.JWT_REFRESH_SECRET as string) : null;
+    const decodedRefreshToken = refreshToken 
+        ? jwtUtils.verifyToken(refreshToken, process.env.JWT_REFRESH_SECRET as string) 
+        : null;
 
-    if(!decodedAccessToken?.success && decodedRefreshToken?.success){
-        //access token has expired but refresh token is valid, get new access token from backend
+    // 1. Refresh Token Strategy
+    if (!decodedAccessToken?.success && decodedRefreshToken?.success) {
         const result = await getNewAccessToken();
 
-        if(result.success){
+        if (result.success) {
             const newAccessToken = result.data.accessToken;
 
-            cookieStore.set("accessToken", newAccessToken , {
-                httpOnly : true,
-                maxAge : 60 * 60 * 24,
-                sameSite : "lax",
+            cookieStore.set("accessToken", newAccessToken, {
+                httpOnly: true,
+                maxAge: 60 * 60 * 24,
+                sameSite: "lax",
             });
 
             accessToken = newAccessToken;
@@ -41,63 +49,57 @@ export async function proxy(request: NextRequest) {
         }
     }
 
-    let userRole = null;
-
-    if(!decodedAccessToken?.success){
-        //token has expired or is invalid, clear the cookies
+    // Clear stale cookie if token remains invalid
+    if (!decodedAccessToken?.success) {
         cookieStore.delete("accessToken");
-        // return NextResponse.redirect(new URL('/login', request.url));
+        accessToken = undefined;
     }
 
-    if(decodedAccessToken?.success && decodedAccessToken.data){
-        userRole = (decodedAccessToken.data as JwtPayload).role;
+    // Extract user role
+    const userRole = (decodedAccessToken?.data as JwtPayload)?.role ?? null;
+
+    // 2. Redirect authenticated users away from Auth routes (/login, /register)
+    const isAuthRoute = AUTH_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
+    
+    if (accessToken && isAuthRoute) {
+        const defaultRoleRedirects: Record<string, string> = {
+            CUSTOMER: '/dashboard',
+            ADMIN: '/admin-dashboard',
+            PROVIDER: '/provider-dashboard',
+        };
+
+        const redirectUrl = defaultRoleRedirects[userRole] || '/';
+        return NextResponse.redirect(new URL(redirectUrl, request.url));
     }
 
-    if(accessToken && AUTH_ROUTES.includes(pathname)) {
-        if(userRole === "CUSTOMER"){
-            return NextResponse.redirect(new URL('/dashboard', request.url))
-        } else if(userRole === "ADMIN"){
-            return NextResponse.redirect(new URL('/admin-dashboard', request.url))
-        } else if(userRole === "PROVIDER"){
-            return NextResponse.redirect(new URL('/provider-dashboard', request.url))
-        } else {
-            return NextResponse.redirect(new URL('/', request.url))
-        }
-    }
-
+    // 3. Unauthenticated User Protection for Private Routes
     const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
 
-    const isAuthRoute = AUTH_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
-
-    // Authenticated Pages Protection : Authorization is not handled yet
-    if(!accessToken && !isPublicRoute && !isAuthRoute){
-        const loginUrl = new URL('/login', request.url)
-
-        loginUrl.searchParams.set("redirectTo", pathname)
-
+    if (!accessToken && !isPublicRoute && !isAuthRoute) {
+        const loginUrl = new URL('/login', request.url);
+        loginUrl.searchParams.set("redirectTo", pathname);
         return NextResponse.redirect(loginUrl);
     }
 
-    // Authorization : Role based access control
-    if(pathname.startsWith("/dashboard") && userRole !== "USER"){
-        return NextResponse.redirect(new URL('/not-found', request.url));
-    }else if(pathname.startsWith("/admin-dashboard") && userRole !== "ADMIN"){
-        return NextResponse.redirect(new URL('/not-found', request.url));
-    }else if(pathname.startsWith("/author-dashboard") && userRole !== "AUTHOR"){
-        return NextResponse.redirect(new URL('/not-found', request.url));
+    // 4. Role-Based Access Control (RBAC) Check
+    const matchedRoutePrefix = Object.keys(ROLE_BASED_ROUTES).find((route) =>
+        pathname === route || pathname.startsWith(route + "/")
+    );
+
+    if (matchedRoutePrefix) {
+        const allowedRoles = ROLE_BASED_ROUTES[matchedRoutePrefix];
+        
+        // If user has no role or their role isn't allowed for this path
+        if (!userRole || !allowedRoles.includes(userRole)) {
+            return NextResponse.redirect(new URL('/not-found', request.url));
+        }
     }
 
-    return NextResponse.next()
+    return NextResponse.next();
 }
-
-// Alternatively, you can use a default export:
-// export default function proxy(request: NextRequest) { ... }
 
 export const config = {
     matcher: [
-        // '/dashboard/:path*',
-        // '/admin-dashboard/:path*',
-        // '/provider-dashboard/:path*',
         '/((?!api|_next/static|_next/image|.*\\.png$).*)',
     ],
-}
+};

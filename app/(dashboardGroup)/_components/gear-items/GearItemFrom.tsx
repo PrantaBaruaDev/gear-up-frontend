@@ -34,11 +34,11 @@ const GearItemFrom = ({initialData}: GearItemFormProps) => {
     const [categoryItems, setCategoryItems] = useState<ICategories[]>([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState<string>(initialData?.categoryId || "");
     
-    useEffect(() => {
-        if (initialData?.categoryId) {
-            setSelectedCategoryId(initialData.categoryId);
-        }
-    }, [initialData?.categoryId]);
+    // useEffect(() => {
+    //     if (initialData?.categoryId) {
+    //         setSelectedCategoryId(initialData.categoryId);
+    //     }
+    // }, [initialData?.categoryId]);
 
     useEffect(() => {
         const fetchCategories = async () => {
