@@ -27,7 +27,7 @@ const GearItemListCard = ({ GearListData }: MyGearCardProps) => {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleEdit = () => {
-        router.push(`/admin-dashboard/gear-item/create?id=${GearListData.id}`);
+        router.push(`/dashboard/admin/gear/create?id=${GearListData.id}`);
     };
 
     const handleDelete = async () => {
