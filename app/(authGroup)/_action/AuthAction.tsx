@@ -3,6 +3,7 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import jwt, { JwtPayload } from "jsonwebtoken"
+import { Role } from "@/lib/types/users-type"
 
 type LoginState = {
     success : true,
@@ -49,12 +50,12 @@ export const loginAction = async (prevState : LoginState , formData: FormData) =
         
         const decodedToken = jwt.decode(result.data.accessToken) as JwtPayload;
 
-        if(decodedToken.role === "CUSTOMER"){
-            redirect("/dashboard");
-        } else if(decodedToken.role === "ADMIN"){
-            redirect("/admin-dashboard");
-        } else if(decodedToken.role === "PROVIDER"){
-            redirect("/provider-dashboard");
+        if(decodedToken.role === Role.CUSTOMER){
+            redirect("/dashboard/customer");
+        } else if(decodedToken.role === Role.ADMIN){
+            redirect("/dashboard/admin");
+        } else if(decodedToken.role === Role.PROVIDER){
+            redirect("/dashboard/provider");
         }
     }
 

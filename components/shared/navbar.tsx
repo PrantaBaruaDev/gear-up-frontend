@@ -16,6 +16,7 @@ import { useUserMenuAction } from "../_actions/handleUserMenuAction";
 // Navigation items configuration
 const navItems = [
   { label: "Home", href: "/" },
+  { label: "Gear", href: "/gear" },
   { label: "About", href: "/about" },
   { label: "Services", href: "/services" },
   { label: "Contact", href: "/contact" },

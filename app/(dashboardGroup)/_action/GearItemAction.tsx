@@ -1,6 +1,7 @@
 "use server"
 
 import { IGearItem, IGearItemList, IGearItemUpdate } from "@/lib/types/gear-items-type";
+import { Role } from "@/lib/types/users-type";
 import { getMe } from "@/service/getMe";
 import { isAccessTokenExist } from "@/service/refreshToken";
 import { jwtUtils } from "@/utils/jwt";
@@ -64,8 +65,8 @@ export const createGearItem = async (prevState : GearItemState , formData: FormD
             }
     }
 
-// console.log("gear item create action user me: ", fetchPath);
-//     return;
+    // console.log("gear item create action user me: ", fetchPath);
+    //     return;
 
     const res = await fetch(`${fetchPath}`, {
         method : "POST",
@@ -169,10 +170,10 @@ export const getGearItems = async () => {
     let fetchPath = null;
 
     switch(decodedAccessToken && decodedAccessToken.data.role){
-        case "ADMIN":
+        case Role.ADMIN:
             fetchPath= `${process.env.BACKEND_API_URL}/api/admin/gear`;
             break;
-        case "PROVIDER":
+        case Role.PROVIDER:
             fetchPath= `${process.env.BACKEND_API_URL}/api/provider/gear`;
             break;
         default:

@@ -48,24 +48,11 @@ return;
 }
 
 export const getCategoriesItems = async () => {
-    const cookieStore = await cookies();
-
-    const accessToken = cookieStore.get("accessToken")?.value || null;
-
-    if(!accessToken){
-        return {
-            success : false,
-            message : "User not logged in!"
-        }
-    }
-
     const res = await fetch(`${process.env.BACKEND_API_URL}/api/categories`, {
         headers : {
             // Authorization : accessToken as unknown as string,
             // Authorization : `${accessToken}`,
             // Authorization : `Bearer ${accessToken}`
-
-            Cookie : `accessToken=${accessToken}`
         },
 
         cache : "force-cache",

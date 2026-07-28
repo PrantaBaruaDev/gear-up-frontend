@@ -6,12 +6,12 @@ import { getNewAccessToken } from './service/refreshToken';
 import { Role } from './lib/types/users-type';
 
 const AUTH_ROUTES = ["/login", "/register"];
-const PUBLIC_ROUTES = ["/", "/gears-list"];
+const PUBLIC_ROUTES = ["/", "/gear"];
 
 const ROLE_BASED_ROUTES: Record<string, string[]> = {
     '/dashboard': [Role.CUSTOMER],
-    '/admin-dashboard': [Role.ADMIN],
-    '/provider-dashboard': [Role.PROVIDER],
+    '/dashboard/admin': [Role.ADMIN],
+    '/dashboard/provider': [Role.PROVIDER],
     '/profile': [Role.ADMIN, Role.CUSTOMER, Role.PROVIDER],
     '/notification': [Role.ADMIN, Role.CUSTOMER, Role.PROVIDER],
 };
@@ -64,8 +64,8 @@ export async function proxy(request: NextRequest) {
     if (accessToken && isAuthRoute) {
         const defaultRoleRedirects: Record<string, string> = {
             CUSTOMER: '/dashboard',
-            ADMIN: '/admin-dashboard',
-            PROVIDER: '/provider-dashboard',
+            ADMIN: '/dashboard/admin',
+            PROVIDER: '/dashboard/provider',
         };
 
         const redirectUrl = defaultRoleRedirects[userRole] || '/';
