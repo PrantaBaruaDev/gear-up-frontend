@@ -5,7 +5,7 @@ export const ADMIN_SIDEBAR_ITEMS: NavGroup[] = [
     {
         groupLabel: "Dashboards",
         items: [
-        { title: "Admin Dashboard", url: "/admin-dashboard", icon: ShieldAlert },
+        { title: "Admin Dashboard", url: "/dashboard/admin", icon: ShieldAlert },
         ],
     },
     {
@@ -17,12 +17,12 @@ export const ADMIN_SIDEBAR_ITEMS: NavGroup[] = [
                 children: [
                     {
                         title: "Category Item List",
-                        url: `/admin-dashboard/category-item`,
+                        url: `/dashboard/admin/category-item`,
                         icon: List,
                     },
                     {
                         title: "Create Gear",
-                        url: `/admin-dashboard/category-item/create`,
+                        url: `/dashboard/admin/category-item/create`,
                         icon: PlusCircle,
                     },
                 ],
@@ -33,12 +33,12 @@ export const ADMIN_SIDEBAR_ITEMS: NavGroup[] = [
                 children: [
                     {
                         title: "Gear Item List",
-                        url: `/admin-dashboard/gear-item`,
+                        url: `/dashboard/admin/gear`,
                         icon: List,
                     },
                     {
                         title: "Create Gear",
-                        url: `/admin-dashboard/gear-item/create`,
+                        url: `/dashboard/admin/gear/create`,
                         icon: PlusCircle,
                     },
                 ],
