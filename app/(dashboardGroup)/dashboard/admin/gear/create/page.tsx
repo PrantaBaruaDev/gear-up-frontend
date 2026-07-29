@@ -1,4 +1,4 @@
-// app/(dashboardGroup)/admin-dashboard/gear-item/create
+// app/(dashboardGroup)/dashboard/admin/gear-item/create
 
 import { getSingleGearItem } from "@/app/(dashboardGroup)/_action/GearItemAction";
 import GearItemFrom from "@/app/(dashboardGroup)/_components/gear-items/GearItemFrom"

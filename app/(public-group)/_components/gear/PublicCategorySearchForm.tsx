@@ -2,7 +2,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ICategories } from "@/lib/types/categories-type";
 
 import { Input } from "@/components/ui/input";
@@ -26,14 +26,15 @@ export const PublicCategorySearchForm = ({ categories }: Props) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Keep state in sync whenever searchParams in the URL change
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [availableOnly, setAvailableOnly] = useState<boolean>(false);
+  // Read initial states directly from searchParams without needing useEffect
+  // Default availableOnly to true if the URL param isn't set, otherwise match URL value
+  const paramCategory = searchParams.get("category") || "";
+  const paramAvailable = searchParams.has("availableOnly")
+    ? searchParams.get("availableOnly") === "true"
+    : true; // Default is true when key is missing
 
-  useEffect(() => {
-    setSelectedCategory(searchParams.get("category") || "");
-    setAvailableOnly(searchParams.get("availableOnly") === "true");
-  }, [searchParams]);
+  const [selectedCategory, setSelectedCategory] = useState<string>(paramCategory);
+  const [availableOnly, setAvailableOnly] = useState<boolean>(paramAvailable);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,23 +51,31 @@ export const PublicCategorySearchForm = ({ categories }: Props) => {
     if (brand) params.set("brand", brand);
     if (minPrice) params.set("minPrice", minPrice);
     if (maxPrice) params.set("maxPrice", maxPrice);
-    if (availableOnly) params.set("availableOnly", "true");
+    
+    // Explicitly set availableOnly flag
+    params.set("availableOnly", availableOnly ? "true" : "false");
 
     router.push(`${pathname}?${params.toString()}`);
   };
 
   const handleReset = () => {
     setSelectedCategory("");
-    setAvailableOnly(false);
+    setAvailableOnly(true);
     router.push(pathname);
   };
 
   return (
-    <form onSubmit={handleSearch} className="flex flex-wrap items-end gap-4 p-4 border rounded-xl bg-card mb-6 shadow-sm">
+    <form
+      onSubmit={handleSearch}
+      className="flex flex-wrap items-end gap-4 p-4 border rounded-xl bg-card mb-6 shadow-sm"
+    >
       {/* Category Dropdown */}
       <div className="flex flex-col gap-1.5 min-w-[200px]">
         <Label>Category</Label>
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+        <Select
+          value={selectedCategory}
+          onValueChange={setSelectedCategory}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select Category" />
           </SelectTrigger>
@@ -124,7 +133,7 @@ export const PublicCategorySearchForm = ({ categories }: Props) => {
         <Checkbox
           id="availableOnly"
           checked={availableOnly}
-          onCheckedChange={(checked) => setAvailableOnly(!!checked)}
+          onCheckedChange={(checked) => setAvailableOnly(Boolean(checked))}
         />
         <Label htmlFor="availableOnly" className="cursor-pointer">
           Available Only
@@ -133,8 +142,8 @@ export const PublicCategorySearchForm = ({ categories }: Props) => {
 
       {/* Actions */}
       <div className="flex gap-2">
-        <Button type="submit">Filter</Button>
-        <Button type="button" variant="outline" onClick={handleReset}>
+        <Button type="submit" className="cursor-pointer">Filter</Button>
+        <Button type="button" className="cursor-pointer" variant="outline" onClick={handleReset}>
           Reset
         </Button>
       </div>
