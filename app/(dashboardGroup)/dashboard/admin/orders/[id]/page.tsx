@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 
 import { getSingleRentalOrders } from "@/app/(dashboardGroup)/_action/RentalOrdersAction";
-import { PayNowButton } from "@/app/(dashboardGroup)/_components/payment/PayNowButton"; 
 import { RentalOrder } from "@/lib/types/gear-order-type";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { UpdateOrderStatusCard } from "@/app/(dashboardGroup)/_components/rental-orders/UpdateOrderStatusCard";
 
 interface OrderDetailsPageProps {
   params: Promise<{
@@ -57,7 +57,7 @@ export default async function OrderDetailsPage({ params }: OrderDetailsPageProps
           asChild
           className="gap-2 -ml-2 text-muted-foreground hover:text-foreground"
         >
-          <Link href="/dashboard/customer/orders">
+          <Link href="/dashboard/orders">
             <ArrowLeft className="w-4 h-4" /> Back to Orders
           </Link>
         </Button>
@@ -90,7 +90,7 @@ export default async function OrderDetailsPage({ params }: OrderDetailsPageProps
           asChild
           className="w-fit gap-2 -ml-2 text-muted-foreground hover:text-foreground"
         >
-          <Link href="/dashboard/customer/orders">
+          <Link href="/dashboard/admin/orders">
             <ArrowLeft className="w-4 h-4" /> Back to Orders
           </Link>
         </Button>
@@ -295,11 +295,6 @@ export default async function OrderDetailsPage({ params }: OrderDetailsPageProps
                       No payment transaction has been recorded for this order yet.
                     </p>
                   </div>
-
-                  {/* Render Pay Now Button when payment is pending */}
-                  <div className="w-full max-w-xs pt-2">
-                    <PayNowButton orderId={order.id} />
-                  </div>
                 </div>
               )}
             </CardContent>
@@ -308,6 +303,12 @@ export default async function OrderDetailsPage({ params }: OrderDetailsPageProps
 
         {/* Sidebar Information */}
         <div className="space-y-6">
+          {/* Update Order Status Card */}
+          <UpdateOrderStatusCard
+            orderId={order.id}
+            currentStatus={order.status}
+          />
+
           {/* Customer Card */}
           {order.customer && (
             <Card>
