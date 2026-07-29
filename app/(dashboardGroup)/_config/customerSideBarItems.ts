@@ -3,12 +3,13 @@ import { HomeIcon, List, PlusCircle, ShoppingBasket } from "lucide-react";
 import { PROVIDER_SIDEBAR_ITEMS } from "./providerSideBarItems";
 import { ADMIN_SIDEBAR_ITEMS } from "./adminSideBarItems";
 
+const BASE_ROUTE = '/dashboard/customer';
 
 const CUSTOMER_SIDEBAR_ITEMS: NavGroup[] = [
     {
       groupLabel: "Dashboards",
       items: [
-        { title: "Dashboard", url: "/dashboard", icon: HomeIcon },
+        { title: "Dashboard", url: `${BASE_ROUTE}`, icon: HomeIcon },
       ], 
     },
     {
@@ -18,10 +19,11 @@ const CUSTOMER_SIDEBAR_ITEMS: NavGroup[] = [
           title: "Gears",
           icon: ShoppingBasket,
           children: [
-            { title: "Gear Item List", url: `/dashboard/gear-item`, icon: List },
-            { title: "Create Gear", url: `/dashboard/gear-item/create`, icon: PlusCircle },
+            { title: "Gear Item List", url: `${BASE_ROUTE}/gear`, icon: List },
+            { title: "Create Gear", url: `${BASE_ROUTE}/gear/create`, icon: PlusCircle },
           ],
         },
+        { title: "Rental Orders List", url: `${BASE_ROUTE}/orders`, icon: List },
       ],
     },
 ];

@@ -5,15 +5,16 @@ import { jwtUtils } from './utils/jwt';
 import { getNewAccessToken } from './service/refreshToken';
 import { Role } from './lib/types/users-type';
 
-const AUTH_ROUTES = ["/login", "/register"];
-const PUBLIC_ROUTES = ["/", "/gear"];
+const AUTH_ROUTES = ["/auth/login", "/auth/register"];
+const PUBLIC_ROUTES = ["/", "/gear", "/payment"];
 
 const ROLE_BASED_ROUTES: Record<string, string[]> = {
-    '/dashboard': [Role.CUSTOMER],
+    '/dashboard/customer': [Role.CUSTOMER],
     '/dashboard/admin': [Role.ADMIN],
     '/dashboard/provider': [Role.PROVIDER],
     '/profile': [Role.ADMIN, Role.CUSTOMER, Role.PROVIDER],
     '/notification': [Role.ADMIN, Role.CUSTOMER, Role.PROVIDER],
+    '/checkout': [Role.ADMIN, Role.CUSTOMER, Role.PROVIDER],
 };
 
 export async function proxy(request: NextRequest) {
@@ -63,7 +64,7 @@ export async function proxy(request: NextRequest) {
     
     if (accessToken && isAuthRoute) {
         const defaultRoleRedirects: Record<string, string> = {
-            CUSTOMER: '/dashboard',
+            CUSTOMER: '/dashboard/customer',
             ADMIN: '/dashboard/admin',
             PROVIDER: '/dashboard/provider',
         };
@@ -76,7 +77,7 @@ export async function proxy(request: NextRequest) {
     const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
 
     if (!accessToken && !isPublicRoute && !isAuthRoute) {
-        const loginUrl = new URL('/login', request.url);
+        const loginUrl = new URL('/auth/login', request.url);
         loginUrl.searchParams.set("redirectTo", pathname);
         return NextResponse.redirect(loginUrl);
     }

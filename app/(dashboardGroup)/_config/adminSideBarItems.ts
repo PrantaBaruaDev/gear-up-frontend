@@ -1,11 +1,13 @@
 import { NavGroup } from "@/lib/types/navbar-types";
 import { List, PlusCircle, ShieldAlert, ShoppingBasket } from "lucide-react";
 
+const BASE_ROUTE = '/dashboard/admin';
+
 export const ADMIN_SIDEBAR_ITEMS: NavGroup[] = [
     {
         groupLabel: "Dashboards",
         items: [
-        { title: "Admin Dashboard", url: "/dashboard/admin", icon: ShieldAlert },
+        { title: "Admin Dashboard", url: `${BASE_ROUTE}`, icon: ShieldAlert },
         ],
     },
     {
@@ -17,12 +19,12 @@ export const ADMIN_SIDEBAR_ITEMS: NavGroup[] = [
                 children: [
                     {
                         title: "Category Item List",
-                        url: `/dashboard/admin/category-item`,
+                        url: `${BASE_ROUTE}/category-item`,
                         icon: List,
                     },
                     {
                         title: "Create Gear",
-                        url: `/dashboard/admin/category-item/create`,
+                        url: `${BASE_ROUTE}/category-item/create`,
                         icon: PlusCircle,
                     },
                 ],
@@ -33,16 +35,17 @@ export const ADMIN_SIDEBAR_ITEMS: NavGroup[] = [
                 children: [
                     {
                         title: "Gear Item List",
-                        url: `/dashboard/admin/gear`,
+                        url: `${BASE_ROUTE}/gear`,
                         icon: List,
                     },
                     {
                         title: "Create Gear",
-                        url: `/dashboard/admin/gear/create`,
+                        url: `${BASE_ROUTE}/gear/create`,
                         icon: PlusCircle,
                     },
                 ],
             },
+            { title: "Rental Orders List", url: `${BASE_ROUTE}/orders`, icon: List },
         ],
     },
 ];
