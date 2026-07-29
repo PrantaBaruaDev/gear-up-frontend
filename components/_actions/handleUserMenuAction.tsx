@@ -12,17 +12,21 @@ export const useUserMenuAction = () => {
             toast.success("User Logged Out Successfully!");
             router.push("/login");
         }
+
+        if(action === "checkout"){
+            router.push("/checkout");
+        }
         
         if(action === "dashboard"){
             switch (user?.role) {
                 case "ADMIN":
-                    router.push("/admin-dashboard");
+                    router.push("/dashboard/admin");
                     break;
                 case "PROVIDER":
-                    router.push("/provider-dashboard");
+                    router.push("/dashboard/provider");
                     break;
                 case "CUSTOMER":
-                    router.push("/dashboard");
+                    router.push("/dashboard/customer");
                     break;
                 default:
                     router.push("/");
