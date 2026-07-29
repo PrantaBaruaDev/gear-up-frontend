@@ -6,3 +6,9 @@ export const Role = {
 } as const
 
 export type Role = (typeof Role)[keyof typeof Role]
+
+export interface IUserQuery {
+  id: string;
+  name: string;
+  email: string;
+}

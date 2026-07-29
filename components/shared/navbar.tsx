@@ -8,7 +8,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LayoutDashboardIcon, LogOut, Settings, User } from "lucide-react";
+import { LayoutDashboardIcon, LogOut, Settings, ShoppingBag, User } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useUserMenuAction } from "../_actions/handleUserMenuAction";
@@ -25,6 +25,7 @@ const navItems = [
 // User menu items configuration
 const userMenuItems = [
   { label: "Dashboard", icon: LayoutDashboardIcon, action: "dashboard" },
+  { label: "Checkout", icon: ShoppingBag, action: "checkout" },
   { label: "Profile", icon: User, action: "profile" },
   { label: "Settings", icon: Settings, action: "settings" },
 ];
@@ -132,12 +133,12 @@ export function Navbar({user} : NavbarProps) {
               </DropdownMenuContent>
             </DropdownMenu>
               ) : (<>
-              <Link href={"/login"} >
+              <Link href={"/auth/login"} >
                     <Button className="cursor-pointer px-8">
                           Login
                     </Button>
               </Link>
-              <Link href={"/register"} >
+              <Link href={"/auth/register"} >
                     <Button className="cursor-pointer px-8">
                           Register
                     </Button>

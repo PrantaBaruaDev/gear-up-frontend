@@ -28,19 +28,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  HomeIcon,
   User,
   LogOut,
   StarIcon,
   Bell,
-  ShoppingBasket,
   ChevronRight,
-  PlusCircle,
-  List,
-  ShieldAlert,
-  UserCheck,
-  LucideIcon,
-  ChevronsUpDown
+  ChevronsUpDown,
+  ShoppingBag
 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
