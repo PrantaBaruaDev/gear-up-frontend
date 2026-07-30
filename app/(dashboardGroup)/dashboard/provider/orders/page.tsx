@@ -69,9 +69,27 @@ export default async function OrderListPage() {
         return (
           <Badge
             variant="outline"
-            className="border-emerald-500 text-emerald-600 bg-emerald-50/50 gap-1"
+            className="border-gray-500 text-gray-600 bg-gray-50/50 gap-1"
           >
             <RotateCcw className="w-3 h-3" /> Returned
+          </Badge>
+        );
+      case "PICKED_UP":
+        return (
+          <Badge
+            variant="outline"
+            className="border-emerald-500 text-emerald-600 bg-emerald-50/50 gap-1"
+          >
+            <RotateCcw className="w-3 h-3" /> Picked Up
+          </Badge>
+        );
+      case "CANCELLED":
+        return (
+          <Badge
+            variant="outline"
+            className="border-red-500 text-red-600 bg-red-50/50 gap-1"
+          >
+            <RotateCcw className="w-3 h-3" /> Cancelled
           </Badge>
         );
       default:
@@ -163,7 +181,7 @@ export default async function OrderListPage() {
                       <TableCell>{getStatusBadge(order.status)}</TableCell>
                       <TableCell>
                         {order.payment ? (
-                          <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 font-medium text-[11px] border-emerald-200">
+                          <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-100 font-medium text-[11px] border-purple-200">
                             Paid
                           </Badge>
                         ) : (

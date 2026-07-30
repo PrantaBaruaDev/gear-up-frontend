@@ -1,8 +1,36 @@
 import { ICategories } from "./categories-type";
-import { IUserJwtPayload } from "./types";
 import { IUserQuery } from "./users-type";
 
+export interface IGearSingleResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: IGearItemQuery;
+}
 
+export interface IGearSearchParams {
+  category: string,
+  brand: string,
+  minPrice: string,
+  maxPrice: string,
+  availableOnly: string
+}
+
+export interface IGearItemQuery {
+  id: string;
+  title: string;
+  description: string;
+  brand: string;
+  pricePerDay: string | number;
+  stock: number;
+  availableStock: number;
+  categoryId: string;
+  providerId: string;
+  createdAt: string;
+  updatedAt: string;
+  category: ICategories;
+  provider: IUserQuery;
+}
 
 export type IGearItem = {
     title: string;
