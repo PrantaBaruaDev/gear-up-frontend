@@ -15,14 +15,7 @@ const CUSTOMER_SIDEBAR_ITEMS: NavGroup[] = [
     {
       groupLabel: "Management",
       items: [
-        {
-          title: "Gears",
-          icon: ShoppingBasket,
-          children: [
-            { title: "Gear Item List", url: `${BASE_ROUTE}/gear`, icon: List },
-            { title: "Create Gear", url: `${BASE_ROUTE}/gear/create`, icon: PlusCircle },
-          ],
-        },
+        { title: "Gear Item List", url: `${BASE_ROUTE}/gear`, icon: List },
         { title: "Rental Orders List", url: `${BASE_ROUTE}/orders`, icon: List },
       ],
     },

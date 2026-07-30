@@ -18,13 +18,13 @@ export const ADMIN_SIDEBAR_ITEMS: NavGroup[] = [
                 icon: ShoppingBasket,
                 children: [
                     {
-                        title: "Category Item List",
-                        url: `${BASE_ROUTE}/category-item`,
+                        title: "Category Item List | (NOT WORKED)",
+                        url: `${BASE_ROUTE}/category`,
                         icon: List,
                     },
                     {
-                        title: "Create Gear",
-                        url: `${BASE_ROUTE}/category-item/create`,
+                        title: "Create Gear | (NOT WORK)",
+                        url: `${BASE_ROUTE}/category/new`,
                         icon: PlusCircle,
                     },
                 ],
@@ -40,7 +40,7 @@ export const ADMIN_SIDEBAR_ITEMS: NavGroup[] = [
                     },
                     {
                         title: "Create Gear",
-                        url: `${BASE_ROUTE}/gear/create`,
+                        url: `${BASE_ROUTE}/gear/new`,
                         icon: PlusCircle,
                     },
                 ],

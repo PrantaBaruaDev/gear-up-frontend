@@ -24,26 +24,15 @@ export const PROVIDER_SIDEBAR_ITEMS: NavGroup[] = [
           },
           {
             title: "Create Gear",
-            url: `${BASE_ROUTE}/gear/create`,
+            url: `${BASE_ROUTE}/gear/new`,
             icon: PlusCircle,
           },
         ],
       },
       {
-        title: "Orders",
-        icon: ShoppingBasket,
-        children: [
-          {
-            title: "Orders List",
-            url: `${BASE_ROUTE}/orders`,
-            icon: List,
-          },
-          {
-            title: "Create Gear",
-            url: `${BASE_ROUTE}/orders/create`,
-            icon: PlusCircle,
-          },
-        ],
+        title: "Orders List",
+        url: `${BASE_ROUTE}/orders`,
+        icon: List,
       },
     ],
   },
