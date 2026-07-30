@@ -17,7 +17,8 @@ const CreateGearItems = async({
   return (
     <>
       <div>Create Gear Items</div>
-      
+      <div>test update</div>
+
       <GearItemFrom />
     </>
   )

@@ -20,34 +20,29 @@ import { deleteGearItem } from '../../_action/GearItemAction';
 
 type MyGearCardProps = {
     GearListData: IGearItemList;
+    UserRole: string;
 }
 
-const GearItemListCard = ({ GearListData }: MyGearCardProps) => {
+const GearItemListCard = ({ GearListData, UserRole }: MyGearCardProps) => {
     const router = useRouter();
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleEdit = () => {
-        router.push(`/dashboard/admin/gear/create?id=${GearListData.id}`);
+        router.push(`/dashboard/${UserRole}/gear/new?id=${GearListData.id}`);
     };
 
     const handleDelete = async () => {
-        // 1. Confirm before deleting
         const confirmed = window.confirm("Are you sure you want to delete this gear item?");
         if (!confirmed) return;
 
         try {
             setIsDeleting(true);
 
-            // 2. Call the server action
             const result = await deleteGearItem(GearListData.id);
 
-            // 3. Handle response
             if (result.success) {
-                // Success: Server action already invalidates tags. 
-                // You can show a success toast here if you use toast notifications.
                 console.log("Deleted successfully:", result.message);
             } else {
-                // Error from server/API
                 alert(result.message || "Failed to delete item.");
             }
         } catch (error) {

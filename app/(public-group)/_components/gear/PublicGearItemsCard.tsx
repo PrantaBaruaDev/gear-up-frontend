@@ -17,6 +17,7 @@ import { IGearItemList } from '@/lib/types/gear-items-type'
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/useCartStore'; 
 import { ShoppingBag, Check } from 'lucide-react';
+import Link from 'next/link';
 
 type MyGearCardProps = {
   GearListData: IGearItemList;
@@ -58,10 +59,12 @@ const PublicGearItemListCard = ({ GearListData }: MyGearCardProps) => {
             <Badge variant="secondary">{GearListData.category?.name || "Gear"}</Badge>
           </CardAction>
           <CardTitle>
+            <Link href={`/gear/${GearListData.id}`} className='cursor-pointer'>
               <h2>{GearListData.title}</h2>
 
               <p>Price Per Day: ${GearListData.pricePerDay} </p>
               <p>Brand: {GearListData.brand}</p>
+              </Link>
           </CardTitle>
         </CardHeader>
 

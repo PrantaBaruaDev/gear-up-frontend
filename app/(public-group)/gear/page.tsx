@@ -5,9 +5,10 @@ import PublicGearItemListCard from '../_components/gear/PublicGearItemsCard';
 import { getPublicGearItems } from '../_action/PublicGearItemsAction';
 import { ICategories } from '@/lib/types/categories-type';
 import { PublicCategorySearchForm } from '../_components/gear/PublicCategorySearchForm';
+import { IGearSearchParams } from '@/lib/types/gear-items-type';
 
 interface PageProps {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: IGearSearchParams;
 }
 
 const GearItemPublicList = async ({ searchParams }: PageProps) => {

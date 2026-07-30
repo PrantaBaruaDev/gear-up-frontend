@@ -1,7 +1,9 @@
+// app/(dashboardGroup)/dashboard/admin/gear-item/create
+
 import { getSingleGearItem } from "@/app/(dashboardGroup)/_action/GearItemAction";
 import GearItemFrom from "@/app/(dashboardGroup)/_components/gear-items/GearItemFrom"
 
-const ProviderCreateGearItems = async({
+const CreateGearItems = async({
   searchParams,
 }: {
   searchParams: Promise<{ id?: string }>;
@@ -23,4 +25,5 @@ const ProviderCreateGearItems = async({
   )
 }
 
-export default ProviderCreateGearItems
+export default CreateGearItems
+

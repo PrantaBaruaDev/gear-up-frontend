@@ -10,6 +10,7 @@ import { Brackets } from "lucide-react";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation"
+import { decode } from "punycode";
 
 type GearItemState = {
     success : true;
@@ -78,8 +79,8 @@ export const createGearItem = async (prevState : GearItemState , formData: FormD
     });
 
     const result = await res.json();
-        if(result.success){
-        revalidateTag("my-gear-post", {
+    if(result.success){
+        revalidateTag("my-gear-items", {
             expire : 0
         })
     }
@@ -144,114 +145,91 @@ export const updateGearItem = async (gearId : string, prevState : GearItemState 
         revalidateTag("my-gear-items", {
             expire : 0
         })
-    } else{
-        revalidateTag("my-gear-post", {
-            expire:0
-        })
     }
 
     console.log("Create PATCH to the api DEtails result: \n", result);
     return result
 }
 
-
 export const getGearItems = async () => {
-    const accessToken = await isAccessTokenExist();
+  const accessToken = await isAccessTokenExist();
 
-    if(!accessToken){
-        return {
-            success : false,
-            message : "User not logged in!"
-        }
-    }
+  if (!accessToken) {
+    return {
+      success: false,
+      message: "User not logged in!",
+    };
+  }
 
-    const decodedAccessToken = accessToken ? (jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string)) as JwtPayload : null;
+  const decoded = accessToken
+    ? (jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string) as JwtPayload)
+    : null;
 
-    let fetchPath = null;
+  let fetchPath = null;
+  switch (decoded?.data?.role) {
+    case Role.ADMIN:
+      fetchPath = `${process.env.BACKEND_API_URL}/api/admin/gear`;
+      break;
+    case Role.PROVIDER:
+      fetchPath = `${process.env.BACKEND_API_URL}/api/provider/gear`;
+      break;
+    default:
+      return {
+        success: false,
+        message: "API Route Path not found!",
+      };
+  }
 
-    switch(decodedAccessToken && decodedAccessToken.data.role){
-        case Role.ADMIN:
-            fetchPath= `${process.env.BACKEND_API_URL}/api/admin/gear`;
-            break;
-        case Role.PROVIDER:
-            fetchPath= `${process.env.BACKEND_API_URL}/api/provider/gear`;
-            break;
-        default:
-            return {
-                success : false,
-                message : "API Route Path not found!"
-            }
-    }
+  const res = await fetch(fetchPath, {
+    headers: {
+      Cookie: `accessToken=${accessToken}`,
+    },
+    cache: "no-store", // Always fetch fresh items list
+  });
 
-    const res = await fetch(fetchPath, {
-        headers : {
-            // Authorization : accessToken as unknown as string,
-            // Authorization : `${accessToken}`,
-            // Authorization : `Bearer ${accessToken}`
+  return await res.json();
+};
 
-            Cookie : `accessToken=${accessToken}`
-        },
+export const getSingleGearItem = async (id: string) => {
+  const accessToken = await isAccessTokenExist();
 
-        cache : "force-cache",
-        next : {
-            revalidate : 60 * 60 * 24, // 1day
-            tags : ["my-gear-items"]
-        }
-    });
+  if (!accessToken) {
+    return {
+      success: false,
+      message: "User not logged in!",
+    };
+  }
 
-    const result = res.json();
+  const decoded = accessToken
+    ? (jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string) as JwtPayload)
+    : null;
 
-    return result
-}
+  let fetchPath = null;
+  switch (decoded?.data?.role) {
+    case Role.ADMIN:
+      fetchPath = `${process.env.BACKEND_API_URL}/api/admin/gear/${id}`;
+      break;
+    case Role.PROVIDER:
+      fetchPath = `${process.env.BACKEND_API_URL}/api/provider/gear/${id}`;
+      break;
+    default:
+      return {
+        success: false,
+        message: "API Route Path not found!",
+      };
+  }
 
-export const getSingleGearItem = async(id: string) => {
-    const accessToken = await isAccessTokenExist();
+  const res = await fetch(fetchPath, {
+    headers: {
+      Cookie: `accessToken=${accessToken}`,
+    },
+    cache: "no-store",
+  });
 
-    if(!accessToken){
-        return {
-            success : false,
-            message : "User not logged in!"
-        }
-    }
+  const result = await res.json();
 
-    const decodedAccessToken = accessToken ? (jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string)) as JwtPayload : null;
-
-    let fetchPath = null;
-
-    switch(decodedAccessToken && decodedAccessToken.data.role){
-        case "ADMIN":
-            fetchPath= `${process.env.BACKEND_API_URL}/api/admin/gear/${id}`;
-            break;
-        case "PROVIDER":
-            fetchPath= `${process.env.BACKEND_API_URL}/api/provider/gear/${id}`;
-            break;
-        default:
-            return {
-                success : false,
-                message : "API Route Path not found!"
-            }
-    }
-
-    const res = await fetch(fetchPath, {
-        headers : {
-            // Authorization : accessToken as unknown as string,
-            // Authorization : `${accessToken}`,
-            // Authorization : `Bearer ${accessToken}`
-
-            Cookie : `accessToken=${accessToken}`
-        },
-
-        cache : "force-cache",
-        next : {
-            revalidate : 60 * 60 * 24, // 1day
-            tags : ["my-gear-items"]
-        }
-    });
-
-    const result = res.json();
-
-    return result
-}
+  return result;
+};
 
 export const deleteGearItem = async (gearId : string) => {
     const accessToken = await isAccessTokenExist();
@@ -266,10 +244,10 @@ export const deleteGearItem = async (gearId : string) => {
     }
 
     switch(userMe && userMe.data.role){
-        case "ADMIN":
+        case Role.ADMIN:
             fetchPath= `${process.env.BACKEND_API_URL}/api/admin/gear/${gearId}`;
             break;
-        case "PROVIDER":
+        case Role.PROVIDER:
             fetchPath= `${process.env.BACKEND_API_URL}/api/provider/gear/${gearId}`;
             break;
         default:
@@ -291,10 +269,6 @@ export const deleteGearItem = async (gearId : string) => {
     if(result.success){
         revalidateTag("my-gear-items", {
             expire : 0
-        })
-    } else{
-        revalidateTag("my-gear-post", {
-            expire: 0
         })
     }
 

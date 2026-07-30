@@ -34,11 +34,11 @@ const GearItemFrom = ({initialData}: GearItemFormProps) => {
     const [categoryItems, setCategoryItems] = useState<ICategories[]>([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState<string>(initialData?.categoryId || "");
     
-    // useEffect(() => {
-    //     if (initialData?.categoryId) {
-    //         setSelectedCategoryId(initialData.categoryId);
-    //     }
-    // }, [initialData?.categoryId]);
+    useEffect(() => {
+        if (initialData?.categoryId) {
+            setSelectedCategoryId(initialData.categoryId);
+        }
+    }, [initialData?.categoryId]);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -70,7 +70,7 @@ const GearItemFrom = ({initialData}: GearItemFormProps) => {
             {
                 isEditMode && (
                     <Input name="id" type="hidden" placeholder="Enter your gear id" 
-                        defaultValue={initialData?.title || ""}
+                        defaultValue={initialData?.id || ""}
                         required/>
                 )
             }
@@ -90,7 +90,7 @@ const GearItemFrom = ({initialData}: GearItemFormProps) => {
                 defaultValue={initialData?.stock || ""}
             required/>
             <Input name="availableStock" type="number" placeholder="Enter your availableStock"
-                defaultValue={initialData?.stock || ""} 
+                defaultValue={initialData?.availableStock || ""} 
                 required/>
 
             <Select name="categoryId"
@@ -116,7 +116,6 @@ const GearItemFrom = ({initialData}: GearItemFormProps) => {
                 {
                     pending? "Submitting" : "Save" 
                 }
-                {/* Create */}
             </Button>
         </Card>
     </form>

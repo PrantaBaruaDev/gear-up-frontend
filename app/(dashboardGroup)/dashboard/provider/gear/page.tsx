@@ -15,22 +15,26 @@ const GearItems = async() => {
     ? result.data.posts
     : [];
 
-  if (!result.success || gearItems.length === 0) {
-    return (
-      <p className="py-12 text-center text-muted-foreground">
-        You haven&apos;t created any Gear Items yet.
-      </p>
-    );
+  const noItem = ()=>{
+    if (!result.success || gearItems.length === 0) {
+      return (
+        <p className="py-12 text-center text-muted-foreground">
+          You haven&apos;t created any Gear Items yet.
+        </p>
+      );
+    }
   }
+
 
   return (
     <>
-      <h2>Gear Items List</h2>
+      <h2>Provider Gear Items List</h2>
       <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
+        {noItem()}
         {gearItems.map((item) => (
           <GearItemListCard key={item.id} 
             GearListData={item}
-            UserRole={"admin"}
+            UserRole='provider'
           />
         ))}
       </div>
