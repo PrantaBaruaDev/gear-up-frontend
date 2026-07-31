@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getRentalOrders } from "@/app/(dashboardGroup)/_action/RentalOrdersAction";
 import { RentalOrder } from "@/lib/types/gear-order-type";
+import { DeleteOrderButton } from "@/app/(dashboardGroup)/_components/orders/delete-order-button";
 
 export default async function OrderListPage() {
   const result = await getRentalOrders();
@@ -42,8 +43,8 @@ export default async function OrderListPage() {
   const orders: RentalOrder[] = Array.isArray(result?.data)
     ? result.data
     : Array.isArray(result?.data?.data)
-    ? result.data.data
-    : [];
+      ? result.data.data
+      : [];
 
   const getStatusBadge = (status: RentalOrder["status"]) => {
     switch (status) {
@@ -125,7 +126,7 @@ export default async function OrderListPage() {
                   const totalItemsCount =
                     order.rentalItems?.reduce(
                       (acc, item) => acc + item.quantity,
-                      0
+                      0,
                     ) || 0;
 
                   return (
@@ -144,7 +145,10 @@ export default async function OrderListPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Badge variant="secondary" className="font-normal text-xs">
+                        <Badge
+                          variant="secondary"
+                          className="font-normal text-xs"
+                        >
                           {order.totalRentDays} Days
                         </Badge>
                       </TableCell>
@@ -155,7 +159,8 @@ export default async function OrderListPage() {
                           </p>
                           {order.rentalItems?.length > 1 && (
                             <p className="text-xs text-muted-foreground">
-                              +{order.rentalItems.length - 1} more item(s) ({totalItemsCount} total units)
+                              +{order.rentalItems.length - 1} more item(s) (
+                              {totalItemsCount} total units)
                             </p>
                           )}
                         </div>
@@ -167,7 +172,10 @@ export default async function OrderListPage() {
                             Paid
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-muted-foreground text-[11px]">
+                          <Badge
+                            variant="outline"
+                            className="text-muted-foreground text-[11px]"
+                          >
                             Unpaid
                           </Badge>
                         )}
@@ -192,6 +200,12 @@ export default async function OrderListPage() {
                               >
                                 <Eye className="w-4 h-4" /> View Details
                               </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <DeleteOrderButton 
+                                  id={order.id} 
+                                  name={order.customer?.name || "Customer"} 
+                                />
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>

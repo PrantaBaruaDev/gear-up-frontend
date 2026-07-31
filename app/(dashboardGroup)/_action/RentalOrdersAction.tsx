@@ -156,68 +156,70 @@ export const getSingleRentalOrders = async (id: string) => {
   }
 };
 
-// export const updateOrderStatusAction = async (orderId : string, prevState : RentalOrderState , formData: FormData) => {
-//     console.log("Update Request come data: id= ",{
-//         orderId
-//     },
-//     "\nUpdate Form request data: ", formData
-//     );
+export const deleteRentalOrders = async (id: string) => {
+  try {
+    const accessToken = await isAccessTokenExist();
 
-//     const status = formData.get("status");
+    if (!accessToken) {
+      return {
+        success: false,
+        message: "User not logged in!",
+        data: [],
+      };
+    }
 
-//     const payload = {
-//         status,
-//     }
+    const decodedAccessToken = accessToken
+      ? (jwtUtils.verifyToken(
+          accessToken,
+          process.env.JWT_ACCESS_SECRET as string
+        ) as JwtPayload)
+      : null;
 
-//     const accessToken = await isAccessTokenExist();
-//     const userMe = await getMe();
-//     let fetchPath = null;
-//     let redirectPath = null;
+    let fetchPath = null;
 
-//     switch(userMe && userMe.data.role){
-//         case Role.ADMIN:
-//             fetchPath= `${process.env.BACKEND_API_URL}/api/admin/rentals/${orderId}`;
-//             redirectPath= "/dashboard/admin";
-//             break;
-//         case Role.PROVIDER:
-//             fetchPath= `${process.env.BACKEND_API_URL}/api/provider/orders/${orderId}`;
-//             redirectPath= "/dashboard/provider";
-//             break;
-//         default:
-//             return {
-//                 success : false,
-//                 message : "API Route Path not found!"
-//             }
-//     }
+    switch (decodedAccessToken?.data?.role) {
+      case Role.ADMIN:
+        fetchPath = `${process.env.BACKEND_API_URL}/api/admin/rentals/${id}`;
+        break;
+      default:
+        return {
+          success: false,
+          message: "API Route Path not found!",
+          data: [],
+        };
+    }
 
-//     try {
-//       const response = await fetch(`${fetchPath}`, {
-//           method : "PATCH",
-//           headers : {
-//               Cookie: `accessToken=${accessToken}`,
-//               "Content-Type" : "application/json"
-//           },
-//           body : JSON.stringify(payload)
-//       });
+    const res = await fetch(fetchPath, {
+      method: "DELETE",
+      headers: {
+        Cookie: `accessToken=${accessToken}`,
+      },
+      cache: "force-cache",
+      next: {
+        revalidate: 60 * 60 * 24, // 1 day
+        tags: ["my-rental-orders"],
+      },
+    });
 
-//       const result = await response.json();
-//       if(result.success){
-//           revalidateTag("my-rental-orders", {
-//               expire : 0
-//           })
-//       } 
+    if (!res.ok) {
+      return {
+        success: false,
+        message: `Failed to delete orders (${res.status})`,
+        data: [],
+      };
+    }
 
-//       if (response.ok) {
-//         revalidatePath(`${redirectPath}/orders/${orderId}`);
-//         return { success: true, message: "Status updated successfully!" };
-//       }
-
-//       return { success: false, message: result.message || "Failed to update status." };
-
-//     } catch(error) {
-//       return { success: false, message: "An unexpected error occurred." };
-//     }
-// }
+    const result = await res.json();
+    return result;
+  } catch (error) {
+    console.error("Error fetching rental orders:", error);
+    return {
+      success: false,
+      message: "Something went wrong while deleting orders.",
+      data: [],
+    };
+  }
+};
 
 export const updateOrderStatusAction = async (
   orderId: string,
