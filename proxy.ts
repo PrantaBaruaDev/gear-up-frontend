@@ -3,19 +3,8 @@ import { JwtPayload } from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { jwtUtils } from './utils/jwt';
 import { getNewAccessToken } from './service/refreshToken';
-import { Role } from './lib/types/users-type';
+import { PUBLIC_ROUTES, AUTH_ROUTES, ROLE_BASED_ROUTES } from './config/routes';
 
-const AUTH_ROUTES = ["/auth/login", "/auth/register"];
-const PUBLIC_ROUTES = ["/", "/gear", "/payment"];
-
-const ROLE_BASED_ROUTES: Record<string, string[]> = {
-    '/dashboard/customer': [Role.CUSTOMER],
-    '/dashboard/admin': [Role.ADMIN],
-    '/dashboard/provider': [Role.PROVIDER],
-    '/profile': [Role.ADMIN, Role.CUSTOMER, Role.PROVIDER],
-    '/notification': [Role.ADMIN, Role.CUSTOMER, Role.PROVIDER],
-    '/checkout': [Role.ADMIN, Role.CUSTOMER, Role.PROVIDER],
-};
 
 export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
