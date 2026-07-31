@@ -17,6 +17,7 @@ import { IGearItemList } from '@/lib/types/gear-items-type'
 import { SquarePen, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation';
 import { deleteGearItem } from '../../_action/GearItemAction';
+import DeleteGearButton from './delete-gear-button';
 
 type MyGearCardProps = {
     GearListData: IGearItemList;
@@ -25,33 +26,10 @@ type MyGearCardProps = {
 
 const GearItemListCard = ({ GearListData, UserRole }: MyGearCardProps) => {
     const router = useRouter();
-    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleEdit = () => {
         router.push(`/dashboard/${UserRole}/gear/new?id=${GearListData.id}`);
     };
-
-    const handleDelete = async () => {
-        const confirmed = window.confirm("Are you sure you want to delete this gear item?");
-        if (!confirmed) return;
-
-        try {
-            setIsDeleting(true);
-
-            const result = await deleteGearItem(GearListData.id);
-
-            if (result.success) {
-                console.log("Deleted successfully:", result.message);
-            } else {
-                alert(result.message || "Failed to delete item.");
-            }
-        } catch (error) {
-            console.error("Delete error:", error);
-            alert("An unexpected error occurred while deleting.");
-        } finally {
-            setIsDeleting(false);
-        }
-    }
 
   return (
     <>
@@ -64,7 +42,7 @@ const GearItemListCard = ({ GearListData, UserRole }: MyGearCardProps) => {
           alt="Gear Item"
           className="relative z-20 aspect-video w-full object-cover"
         />
-        
+
         <CardHeader>
           <CardAction>
             <Badge variant="secondary">{GearListData.category.name}</Badge>
@@ -92,12 +70,11 @@ const GearItemListCard = ({ GearListData, UserRole }: MyGearCardProps) => {
           </CardDescription>
         </CardHeader>
         <CardFooter>
-          <Button className="w-fit px-8 cursor-pointer"
-            onClick={handleDelete}
-            disabled={isDeleting}
-          ><Trash2 /> 
-            {isDeleting ? "Deleting..." : "Delete"} 
-          </Button>
+          <DeleteGearButton 
+            id={GearListData.id} 
+            name={GearListData.title} 
+          />
+
           <Button className="w-fit px-8 cursor-pointer"
             onClick={handleEdit}
           ><SquarePen /> Edit</Button>

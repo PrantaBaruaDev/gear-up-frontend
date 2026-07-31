@@ -17,7 +17,7 @@ import { createGearItem, updateGearItem } from '../../_action/GearItemAction'
 import { useActionState, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { getCategoriesItems } from '../../_action/CategoriesItemsAction'
-import { ICategories, ICategoryQuery } from '@/lib/types/categories-type'
+import { ICategoryItem } from '@/lib/types/categories-type'
 
 interface GearItemFormProps {
     initialData?: IGearItemList | null;
@@ -31,7 +31,7 @@ const GearItemFrom = ({initialData}: GearItemFormProps) => {
         : createGearItem;
 
     const [state, action, pending] = useActionState(actionToPerform, false);
-    const [categoryItems, setCategoryItems] = useState<ICategories[]>([]);
+    const [categoryItems, setCategoryItems] = useState<ICategoryItem[]>([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState<string>(initialData?.categoryId || "");
     
     useEffect(() => {

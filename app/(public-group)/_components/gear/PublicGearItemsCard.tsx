@@ -1,7 +1,6 @@
-// app/(dashboardGroup)/_components/gear-items/GearItemListCard.tsx
 "use client";
 
-import React, { useState } from 'react'
+import React from 'react'
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -15,31 +14,19 @@ import {
 import Image from 'next/image'
 import { IGearItemList } from '@/lib/types/gear-items-type'
 import { Button } from '@/components/ui/button';
-import { useCartStore } from '@/store/useCartStore'; 
-import { ShoppingBag, Check } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 type MyGearCardProps = {
   GearListData: IGearItemList;
 }
 
 const PublicGearItemListCard = ({ GearListData }: MyGearCardProps) => {
-  const addItem = useCartStore((state) => state.addItem);
-  const [added, setAdded] = useState(false);
+  const router = useRouter();
 
-  const handleAddToCart = () => {
-    addItem({
-      gearItemId: GearListData.id,
-      title: GearListData.title,
-      brand: GearListData.brand,
-      pricePerDay: Number(GearListData.pricePerDay),
-      availableStock: GearListData.availableStock,
-    }, 1);
-
-    // Show temporary added feedback
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
-    // router.push('/checkout');
+  const handleViewDetails = () => {
+    router.push(`/gear/${GearListData.id}`);
   };
 
   return (
@@ -80,23 +67,15 @@ const PublicGearItemListCard = ({ GearListData }: MyGearCardProps) => {
         </CardContent>
 
         <CardFooter className="gap-2">
+
           <Button 
-            onClick={handleAddToCart}
-            disabled={GearListData.availableStock <= 0}
+            onClick={handleViewDetails}
             className='w-full cursor-pointer gap-2'
           >
-            {added ? (
-              <>
-                <Check className="h-4 w-4 text-green-400" />
-                Added to Cart!
-              </>
-            ) : (
-              <>
-                <ShoppingBag className="h-4 w-4" />
-                {GearListData.availableStock > 0 ? "Add to Cart" : "Out of Stock"}
-              </>
-            )}
+            <Eye className="h-4 w-4" />
+            View Details
           </Button>
+
         </CardFooter>
       </Card>
     </>

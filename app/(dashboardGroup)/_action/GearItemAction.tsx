@@ -1,16 +1,12 @@
 "use server"
 
-import { IGearItem, IGearItemList, IGearItemUpdate } from "@/lib/types/gear-items-type";
+import { IGearItem, IGearItemUpdate } from "@/lib/types/gear-items-type";
 import { Role } from "@/lib/types/users-type";
 import { getMe } from "@/service/getMe";
 import { isAccessTokenExist } from "@/service/refreshToken";
 import { jwtUtils } from "@/utils/jwt";
 import { JwtPayload } from "jsonwebtoken";
-import { Brackets } from "lucide-react";
 import { revalidateTag } from "next/cache";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation"
-import { decode } from "punycode";
 
 type GearItemState = {
     success : true;
@@ -21,7 +17,6 @@ type GearItemState = {
 
 
 export const createGearItem = async (prevState : GearItemState , formData: FormData) => {
-
     const title = formData.get("title");
     const description = formData.get("description");
     const brand = formData.get("brand");
@@ -66,9 +61,6 @@ export const createGearItem = async (prevState : GearItemState , formData: FormD
             }
     }
 
-    // console.log("gear item create action user me: ", fetchPath);
-    //     return;
-
     const res = await fetch(`${fetchPath}`, {
         method : "POST",
         headers : {
@@ -89,12 +81,6 @@ export const createGearItem = async (prevState : GearItemState , formData: FormD
 }
 
 export const updateGearItem = async (gearId : string, prevState : GearItemState , formData: FormData) => {
-    console.log("Update Request come data: id= ",{
-        gearId
-    },
-    "\nUpdate Form request data: ", formData
-    );
-
     const title = formData.get("title");
     const description = formData.get("description");
     const brand = formData.get("brand");
@@ -184,7 +170,7 @@ export const getGearItems = async () => {
     headers: {
       Cookie: `accessToken=${accessToken}`,
     },
-    cache: "no-store", // Always fetch fresh items list
+    cache: "no-store", 
   });
 
   return await res.json();

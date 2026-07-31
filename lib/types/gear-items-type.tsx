@@ -1,4 +1,4 @@
-import { ICategories } from "./categories-type";
+import { ICategoryItem } from "./categories-type";
 import { IUserQuery } from "./users-type";
 
 export interface IGearSingleResponse {
@@ -28,7 +28,7 @@ export interface IGearItemQuery {
   providerId: string;
   createdAt: string;
   updatedAt: string;
-  category: ICategories;
+  category: ICategoryItem;
   provider: IUserQuery;
 }
 
@@ -63,7 +63,7 @@ export interface IGearItemList {
     availableStock: number;
     categoryId: string;
     providerId: string;
-    category: ICategories,
+    category: ICategoryItem,
     provider: IUserQuery
 }
 

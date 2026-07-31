@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { IGearItemQuery } from "@/lib/types/gear-items-type";
-import { useCartStore } from "@/store/useCartStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,92 +14,45 @@ import {
   Tag, 
   Minus, 
   Plus, 
-  ShoppingCart,
   Building2,
   ArrowLeft
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { RentNowButton } from "@/components/RentNowButton"; // Ensure correct import path
 
 interface GearDetailsClientProps {
   gear: IGearItemQuery;
 }
 
 export default function GearDetailsClient({ gear }: GearDetailsClientProps) {
-  const router = useRouter();
-  
-  // Local UI State
-  const [days, setDays] = useState<number>(1);
+  // Quantity State
   const [itemQuantity, setItemQuantity] = useState<number>(1);
 
-  // Safely fallback between 'id'
+  // Safely fallback values
   const itemId = gear.id || "";
   const categoryName = gear.category?.name || "General";
   const providerName = gear.provider?.name || "Verified Provider";
   const providerEmail = gear.provider?.email || "";
 
-  // Zustand Store Actions
-  const addItem = useCartStore((state) => state.addItem);
-  const setRentalDates = useCartStore((state) => state.setRentalDates);
-
   const pricePerDay = Number(gear.pricePerDay);
-  const totalPrice = (pricePerDay * itemQuantity * days).toFixed(2);
+  const totalPricePerDay = (pricePerDay * itemQuantity).toFixed(2);
   const isAvailable = gear.availableStock > 0;
-
-  const handleIncrementDays = () => setDays((prev) => prev + 1);
-  const handleDecrementDays = () => setDays((prev) => (prev > 1 ? prev - 1 : 1));
 
   const handleIncrementQuantity = () => {
     setItemQuantity((prev) => Math.min(prev + 1, gear.availableStock));
   };
+
   const handleDecrementQuantity = () => {
     setItemQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   };
 
-  // Handler for Add To Cart
-  const handleAddToCart = () => {
-    if (!isAvailable) {
-      toast.error("This item is currently out of stock.");
-      return;
-    }
-
-    // Calculate dates
-    const today = new Date();
-    const endDate = new Date(today);
-    endDate.setDate(today.getDate() + days);
-
-    // Set rental dates in Zustand Store
-    setRentalDates(today.toISOString(), endDate.toISOString());
-
-    // Add item to Zustand Store
-    addItem(
-      {
-        gearItemId: itemId,
-        title: gear.title,
-        brand: gear.brand,
-        pricePerDay: Number(gear.pricePerDay),
-        availableStock: gear.availableStock,
-      },
-      itemQuantity
-    );
-
-    // Success notification
-    toast.success(`${gear.title} added to cart!`, {
-      description: `Reserved for ${days} ${days === 1 ? "day" : "days"} (${itemQuantity} unit${itemQuantity > 1 ? "s" : ""}).`,
-      action: {
-        label: "View Cart",
-        onClick: () => router.push("/cart"),
-      },
-    });
-  };
-
-  const providerInitials = providerName
-    .split(" ")
-    .map((n) => n[0])
-    .filter(Boolean)
-    .join("")
-    .toUpperCase() || "P";
+  const providerInitials =
+    providerName
+      .split(" ")
+      .map((n) => n[0])
+      .filter(Boolean)
+      .join("")
+      .toUpperCase() || "P";
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
@@ -115,7 +67,7 @@ export default function GearDetailsClient({ gear }: GearDetailsClientProps) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Information */}
+        {/* Product details */}
         <div className="lg:col-span-2 space-y-6">
           <Card className="shadow-sm">
             <CardHeader className="space-y-3">
@@ -179,7 +131,7 @@ export default function GearDetailsClient({ gear }: GearDetailsClientProps) {
             </CardContent>
           </Card>
 
-          {/* Provider Details */}
+          {/* Provider Card */}
           <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -204,7 +156,7 @@ export default function GearDetailsClient({ gear }: GearDetailsClientProps) {
           </Card>
         </div>
 
-        {/* Right Column: Dynamic Pricing & Cart Widget */}
+        {/* Action Sidebar */}
         <div className="lg:col-span-1">
           <Card className="shadow-md sticky top-6 border-2 border-primary/10">
             <CardHeader>
@@ -218,32 +170,6 @@ export default function GearDetailsClient({ gear }: GearDetailsClientProps) {
             <Separator />
 
             <CardContent className="pt-6 space-y-5">
-              {/* Duration selector */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center justify-between">
-                  <span>Rental Duration</span>
-                  <span className="text-xs text-muted-foreground">Days</span>
-                </label>
-                <div className="flex items-center justify-between border rounded-md p-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleDecrementDays}
-                    disabled={days <= 1}
-                  >
-                    <Minus className="w-4 h-4" />
-                  </Button>
-                  <span className="font-semibold text-sm">{days} {days === 1 ? "Day" : "Days"}</span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleIncrementDays}
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-
               {/* Quantity selector */}
               <div className="space-y-2">
                 <label className="text-sm font-medium flex items-center justify-between">
@@ -277,9 +203,9 @@ export default function GearDetailsClient({ gear }: GearDetailsClientProps) {
               <div className="bg-muted/40 p-4 rounded-lg space-y-2 text-sm">
                 <div className="flex justify-between text-muted-foreground text-xs">
                   <span>
-                    ${pricePerDay} × {itemQuantity} item{itemQuantity > 1 ? "s" : ""} × {days} day{days > 1 ? "s" : ""}
+                    ${pricePerDay} × {itemQuantity} item{itemQuantity > 1 ? "s" : ""}
                   </span>
-                  <span>${totalPrice}</span>
+                  <span>${totalPricePerDay} / day</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground text-xs">
                   <span>Service Fee</span>
@@ -287,23 +213,25 @@ export default function GearDetailsClient({ gear }: GearDetailsClientProps) {
                 </div>
                 <Separator />
                 <div className="flex justify-between font-bold text-base pt-1">
-                  <span>Total Price</span>
-                  <span className="text-primary">${totalPrice}</span>
+                  <span>Daily Rate Total</span>
+                  <span className="text-primary">${totalPricePerDay}</span>
                 </div>
               </div>
 
-              {/* Rent Action */}
+              {/* Rent Now Action Button */}
               <div className="space-y-3">
-                <Button
-                  onClick={handleAddToCart}
-                  className="w-full h-11 text-base font-medium cursor-pointer"
-                  disabled={!isAvailable}
-                >
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  {isAvailable ? "Rent This Gear" : "Currently Unavailable"}
-                </Button>
+                <RentNowButton
+                  gearItem={{
+                    id: itemId,
+                    title: gear.title,
+                    brand: gear.brand,
+                    pricePerDay: pricePerDay,
+                    availableStock: gear.availableStock,
+                  }}
+                  quantity={itemQuantity}
+                />
                 <p className="text-xs text-center text-muted-foreground">
-                  Adds gear to your rental cart with instant date reservation.
+                  Select rental start and end dates during checkout.
                 </p>
               </div>
             </CardContent>
