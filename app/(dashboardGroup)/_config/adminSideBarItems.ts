@@ -7,27 +7,17 @@ export const ADMIN_SIDEBAR_ITEMS: NavGroup[] = [
     {
         groupLabel: "Dashboards",
         items: [
-        { title: "Admin Dashboard", url: `${BASE_ROUTE}`, icon: ShieldAlert },
+            { title: "Admin Dashboard", url: `${BASE_ROUTE}`, icon: ShieldAlert },
         ],
     },
     {
         groupLabel: "Management",
+        
         items: [
             {
-                title: "Category",
-                icon: ShoppingBasket,
-                children: [
-                    {
-                        title: "Category Item List | (NOT WORKED)",
-                        url: `${BASE_ROUTE}/category`,
-                        icon: List,
-                    },
-                    {
-                        title: "Create Gear | (NOT WORK)",
-                        url: `${BASE_ROUTE}/category/new`,
-                        icon: PlusCircle,
-                    },
-                ],
+                title: "Category Item List",
+                url: `${BASE_ROUTE}/category`,
+                icon: List,
             },
             {
                 title: "Gears",

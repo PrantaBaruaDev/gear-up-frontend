@@ -8,57 +8,14 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LayoutDashboardIcon, LogOut, Settings, ShoppingBag, User } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useUserMenuAction } from "../_actions/handleUserMenuAction";
+import { UsersResponse } from "@/lib/types/users-type";
+import { navItems, userMenuItems } from "@/config/routes";
 
-// Navigation items configuration
-const navItems = [
-  { label: "Home", href: "/" },
-  { label: "Gear", href: "/gear" },
-  { label: "About", href: "/about" },
-  { label: "Services", href: "/services" },
-  { label: "Contact", href: "/contact" },
-];
-
-// User menu items configuration
-const userMenuItems = [
-  { label: "Dashboard", icon: LayoutDashboardIcon, action: "dashboard" },
-  { label: "Checkout", icon: ShoppingBag, action: "checkout" },
-  { label: "Profile", icon: User, action: "profile" },
-  { label: "Settings", icon: Settings, action: "settings" },
-];
-
-type IUser = {
-    success : boolean,
-    message : string,
-    data : {
-            id : string,
-            name : string,
-            email : string,
-            status : string,
-            role : string,
-            created_at : string,
-            updated_at : string,
-            profiles : {
-                id : string,
-                profilePhoto : string,
-                bio : string | null,
-                userId : string,
-                address : string,
-                phone : string,
-                createdAt : string,
-                updatedAt : string
-            }
-        }
-}
-
-type NavbarProps = {
-    user : IUser
-}
-
-export function Navbar({user} : NavbarProps) {
+export function Navbar({user} : {user: UsersResponse}) {
   const { handleUserMenuAction } = useUserMenuAction();
 
   return (
