@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -16,6 +17,16 @@ interface ConfirmModalProps {
   variant?: "destructive" | "default";
 }
 
+// Helper store to safely detect client-side mounting without cascading re-renders
+const emptySubscribe = () => () => {};
+function useIsClient() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,  // Client snapshot
+    () => false  // Server snapshot
+  );
+}
+
 export default function ConfirmModal({
   isOpen,
   onClose,
@@ -27,7 +38,9 @@ export default function ConfirmModal({
   isLoading = false,
   variant = "destructive",
 }: ConfirmModalProps) {
+  const isClient = useIsClient();
 
+  // Lock scrolling when modal is active
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -39,24 +52,28 @@ export default function ConfirmModal({
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !isClient) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/10 backdrop-blur-sm animate-in fade-in duration-200">
-      {/* Modal Container */}
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div
-        className="w-full max-w-md bg-card text-card-foreground border rounded-xl shadow-xl p-6 space-y-4 animate-in zoom-in-95 duration-150"
+        className="w-full max-w-md bg-card text-card-foreground border rounded-xl shadow-2xl p-6 space-y-4 animate-in zoom-in-95 duration-150 relative z-[10000]"
         role="dialog"
         aria-modal="true"
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* Header Section */}
-        <div className="text-center">
+        {/* Header */}
+        <div className="flex items-start gap-4">
           <div
-            className="p-3 rounded-full w-fit mx-auto bg-destructive/10 text-destructive shrink-0"
+            className={`p-3 rounded-full shrink-0 ${
+              variant === "destructive"
+                ? "bg-destructive/10 text-destructive"
+                : "bg-primary/10 text-primary"
+            }`}
           >
             <AlertTriangle className="w-6 h-6" />
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 text-left">
             <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
             <div className="text-sm text-muted-foreground">{description}</div>
           </div>
@@ -67,7 +84,6 @@ export default function ConfirmModal({
           <Button
             type="button"
             variant="outline"
-            className="cursor-pointer"
             onClick={onClose}
             disabled={isLoading}
           >
@@ -79,7 +95,7 @@ export default function ConfirmModal({
             variant={variant}
             onClick={onConfirm}
             disabled={isLoading}
-            className="gap-2 cursor-pointer"
+            className="gap-2"
           >
             {isLoading ? (
               <>
@@ -92,6 +108,7 @@ export default function ConfirmModal({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

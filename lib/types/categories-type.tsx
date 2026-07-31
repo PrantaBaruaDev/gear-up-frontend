@@ -1,15 +1,22 @@
-
 export interface ICategoryQuery {
-    id: string;
-    name: string;
+  id: string;
+  name: string;
 }
 
 export interface ICreateCategoryQuery {
-    name: string;
+  name: string;
 }
 
-export interface ICategories {
-    id: string;
-    name: string;
-    createdAt: Date;
+export interface ICategoryItem {
+  id: string;
+  name: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+}
+
+export interface CategoryItemState<T = ICategoryItem | ICategoryItem[] | null> {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: T;
 }
