@@ -1,25 +1,30 @@
 // app/(public-group)/gear/page.tsx
 import React from 'react';
+import { IGearItemList } from '@/lib/types/gear-items-type';
 import PublicGearItemListCard from '../_components/gear/PublicGearItemsCard';
 import { getPublicGearItems } from '../_action/PublicGearItemsAction';
-import { ICategoryItem } from '@/lib/types/categories-type';
 import { PublicCategorySearchForm } from '../_components/gear/PublicCategorySearchForm';
-import { IGearItemList, IGearSearchParams } from '@/lib/types/gear-items-type';
+import { IGearSearchParams } from '@/lib/types/gear-items-type';
+import { ICategoryItem } from '@/lib/types/categories-type';
 
 interface PageProps {
   searchParams: IGearSearchParams;
 }
 
 const GearItemPublicList = async ({ searchParams }: PageProps) => {
-  const resolvedParams = searchParams;
+  const resolvedParams = await searchParams;
   const { GEAR_ITEMS, CATEGORIES } = await getPublicGearItems(resolvedParams);
 
   const gearItems: IGearItemList[] = Array.isArray(GEAR_ITEMS?.data)
     ? GEAR_ITEMS.data
+    : Array.isArray(GEAR_ITEMS?.data?.data)
+    ? GEAR_ITEMS.data.data
     : [];
 
   const categories: ICategoryItem[] = Array.isArray(CATEGORIES?.data)
     ? CATEGORIES.data
+    : Array.isArray(CATEGORIES?.data?.data)
+    ? CATEGORIES.data.data
     : [];
 
   return (

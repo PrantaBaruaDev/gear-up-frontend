@@ -7,7 +7,6 @@ import { getPublicGearItems } from '@/app/(public-group)/_action/PublicGearItems
 const GearItemList = async () => {
   const { GEAR_ITEMS } = await getPublicGearItems();
 
-  // Extract Gear Items based on typical API envelope formats
   const gearItems: IGearItemList[] = Array.isArray(GEAR_ITEMS)
     ? GEAR_ITEMS
     : Array.isArray(GEAR_ITEMS?.data)
