@@ -1,14 +1,12 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Edit, Search, Plus, FolderKanban, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ICategoryItem } from "@/lib/types/categories-type";
 import ConfirmModal from "@/components/shared/confirm-delete";
-import { toast } from "sonner";
-import { deleteCategoryItem } from "../../_action/CategoriesItemsAction";
 import { DeleteCategoryButton } from "./delete-category-button";
 
 interface CategoryTableProps {
@@ -21,21 +19,6 @@ export default function CategoryTable({ categories }: CategoryTableProps) {
   const filteredCategories = categories.filter((cat) =>
     cat.name.toLowerCase().includes(search.toLowerCase())
   );
-
-  const [isOpen, setIsOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
-
-  const handleDelete = (id: string, name: string) => {
-    startTransition(async () => {
-      const res = await deleteCategoryItem(id);
-      if (res.success) {
-        toast.success(res.message || `Deleted "${name}" successfully.`);
-        setIsOpen(false);
-      } else {
-        toast.error(res.message || "Failed to delete category.");
-      }
-    });
-  };
 
   return (
     <div className="space-y-4">

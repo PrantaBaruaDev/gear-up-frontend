@@ -1,4 +1,3 @@
-// store/useCartStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -12,11 +11,10 @@ export interface CartGearItem {
 }
 
 interface CartStore {
-  startDate: string | null; // ISO string format
-  endDate: string | null;   // ISO string format
+  startDate: string | null; 
+  endDate: string | null; 
   rentalItems: CartGearItem[];
   
-  // Actions
   setRentalDates: (startDate: string | null, endDate: string | null) => void;
   addItem: (item: Omit<CartGearItem, 'quantity'>, quantity?: number) => void;
   incrementQuantity: (gearItemId: string) => void;
@@ -24,7 +22,6 @@ interface CartStore {
   removeItem: (gearItemId: string) => void;
   clearCart: () => void;
   
-  // Calculations
   getTotalDays: () => number;
   calculateTotalPrice: () => number;
 }
@@ -79,7 +76,7 @@ export const useCartStore = create<CartStore>()(
               }
               return item;
             })
-            .filter((item) => item.quantity > 0), // Remove if quantity drops to 0
+            .filter((item) => item.quantity > 0), 
         }));
       },
 
@@ -93,7 +90,7 @@ export const useCartStore = create<CartStore>()(
 
       getTotalDays: () => {
         const { startDate, endDate } = get();
-        if (!startDate || !endDate) return 1; // Default fallback to 1 day
+        if (!startDate || !endDate) return 1;
         const start = new Date(startDate);
         const end = new Date(endDate);
         const diffTime = Math.abs(end.getTime() - start.getTime());

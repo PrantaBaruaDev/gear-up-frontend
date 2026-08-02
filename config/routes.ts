@@ -1,7 +1,7 @@
 import { Role } from "@/lib/types/users-type";
 import { LayoutDashboardIcon, Settings, ShoppingBag, User } from "lucide-react";
 
-export const PUBLIC_ROUTES = ["/", "/gear", "/payment"];
+export const PUBLIC_ROUTES = ["/", "/gear", "/about", "/payment"];
 
 export const AUTH_ROUTES = ["/auth/login", "/auth/register"];
 

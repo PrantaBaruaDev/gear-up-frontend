@@ -30,6 +30,8 @@ import { Separator } from "@/components/ui/separator";
 
 import { IPayment } from "@/lib/types/payment-type";
 import { getPaymentById } from "@/app/(dashboardGroup)/_action/payment";
+import { getOrderStatusBadge } from "@/app/(dashboardGroup)/_components/orders/order-helper-function";
+import { OrderStatus } from "@/lib/types/gear-order-type";
 
 interface PageProps {
   params: Promise<{
@@ -45,7 +47,6 @@ export default async function PaymentDetailsPage({ params }: PageProps) {
   const getStatusBadge = (status: string) => {
     switch (status?.toUpperCase()) {
       case "COMPLETED":
-      case "PAID":
         return (
           <Badge variant="outline" className="border-emerald-500 text-emerald-600 bg-emerald-50/50 gap-1 px-3 py-1 text-sm font-medium">
             <CheckCircle2 className="w-4 h-4" /> Completed
@@ -57,7 +58,6 @@ export default async function PaymentDetailsPage({ params }: PageProps) {
             <Clock className="w-4 h-4" /> Pending Payment
           </Badge>
         );
-      case "FAILED":
       case "CANCELLED":
         return (
           <Badge variant="outline" className="border-rose-500 text-rose-600 bg-rose-50/50 gap-1 px-3 py-1 text-sm font-medium">
@@ -73,7 +73,7 @@ export default async function PaymentDetailsPage({ params }: PageProps) {
     return (
       <div className="p-6 max-w-4xl mx-auto space-y-6">
         <Button variant="ghost" size="sm" asChild className="gap-2">
-          <Link href="/dashboard/admin/payments">
+          <Link href="/dashboard/customer/payments">
             <ArrowLeft className="w-4 h-4" /> Back to Payments
           </Link>
         </Button>
@@ -89,7 +89,7 @@ export default async function PaymentDetailsPage({ params }: PageProps) {
       {/* Top Back Navigation */}
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" asChild className="gap-2">
-          <Link href="/dashboard/admin/payments">
+          <Link href="/dashboard/customer/payments">
             <ArrowLeft className="w-4 h-4" /> Back to Payments History
           </Link>
         </Button>
@@ -165,7 +165,7 @@ export default async function PaymentDetailsPage({ params }: PageProps) {
               <>
                 <div className="flex justify-between py-1 border-b">
                   <span className="text-muted-foreground">Order Status</span>
-                  <Badge variant="secondary">{payment.rentalOrder.status}</Badge>
+                  {getOrderStatusBadge(payment.rentalOrder.status as OrderStatus)}
                 </div>
                 <div className="flex justify-between py-1 border-b">
                   <span className="text-muted-foreground">Start Date</span>

@@ -3,7 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
-import { Eye, MoreHorizontal, Trash2 } from "lucide-react";
+import {
+  Eye,
+  FolderKanban,
+  MoreHorizontal,
+  Search,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -46,8 +52,21 @@ import { deleteRentalOrders } from "@/app/(dashboardGroup)/_action/RentalOrdersA
 import { RentalOrder } from "@/lib/types/gear-order-type";
 import { getOrderStatusBadge } from "@/app/(dashboardGroup)/_components/orders/order-helper-function";
 import { Role } from "@/lib/types/users-type";
+import { Input } from "@/components/ui/input";
 
-export function OrderListPageComponent({ orders, userRole }: { orders: RentalOrder[], userRole: string }) {
+export function OrderListPageComponent({
+  orders,
+  userRole,
+}: {
+  orders: RentalOrder[];
+  userRole: string;
+}) {
+  const [search, setSearch] = useState("");
+
+  const filteredOrders = orders.filter((cat) =>
+    cat.id.toLowerCase().includes(search.toLowerCase()),
+  );
+
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <div>
@@ -55,6 +74,17 @@ export function OrderListPageComponent({ orders, userRole }: { orders: RentalOrd
         <p className="text-sm text-muted-foreground">
           Manage and inspect gear rental requests and bookings.
         </p>
+      </div>
+
+      <div className="relative w-full sm:w-72">
+        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Input
+          type="search"
+          placeholder="Search Order By ID..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-9"
+        />
       </div>
 
       <Card>
@@ -80,9 +110,27 @@ export function OrderListPageComponent({ orders, userRole }: { orders: RentalOrd
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {orders.map((order) => (
-                  <OrderTableRow key={order.id} order={order} userRole={userRole} />
-                ))}
+                {filteredOrders.length > 0 ? (
+                  filteredOrders.map((order) => (
+                    <OrderTableRow
+                      key={order.id}
+                      order={order}
+                      userRole={userRole}
+                    />
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={8}
+                      className="py-12 text-center text-muted-foreground"
+                    >
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <FolderKanban className="w-8 h-8 opacity-40" />
+                        <p>No Order found.</p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>
@@ -92,8 +140,13 @@ export function OrderListPageComponent({ orders, userRole }: { orders: RentalOrd
   );
 }
 
-// Extracted Row Component (Manages its own dialog state)
-function OrderTableRow({ order, userRole="CUSTOMER" }: { order: RentalOrder, userRole: string }) {
+function OrderTableRow({
+  order,
+  userRole = "CUSTOMER",
+}: {
+  order: RentalOrder;
+  userRole: string;
+}) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -104,27 +157,28 @@ function OrderTableRow({ order, userRole="CUSTOMER" }: { order: RentalOrder, use
 
   switch (userRole) {
     case Role.ADMIN:
-      routePath=`/dashboard/admin/orders/${order.id}`;
+      routePath = `/dashboard/admin/orders/${order.id}`;
       break;
     case Role.PROVIDER:
-      routePath=`/dashboard/provider/orders/${order.id}`;
+      routePath = `/dashboard/provider/orders/${order.id}`;
       break;
     case Role.CUSTOMER:
-      routePath=`/dashboard/customer/orders/${order.id}`;
+      routePath = `/dashboard/customer/orders/${order.id}`;
       break;
     default:
-      routePath=`/dashboard/customer/orders/${order.id}`;
+      routePath = `/dashboard/customer/orders/${order.id}`;
       break;
-    
   }
-  
+
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
       const res = await deleteRentalOrders(order.id);
 
       if (res?.success) {
-        toast.success(res.message || `Deleted order #${order.id.slice(0, 8)} successfully.`);
+        toast.success(
+          res.message || `Deleted order #${order.id.slice(0, 8)} successfully.`,
+        );
       } else {
         toast.error(res?.message || "Failed to delete order.");
       }
@@ -165,7 +219,8 @@ function OrderTableRow({ order, userRole="CUSTOMER" }: { order: RentalOrder, use
             </p>
             {order.rentalItems?.length > 1 && (
               <p className="text-xs text-muted-foreground">
-                +{order.rentalItems.length - 1} more item(s) ({totalItemsCount} total units)
+                +{order.rentalItems.length - 1} more item(s) ({totalItemsCount}{" "}
+                total units)
               </p>
             )}
           </div>
@@ -177,7 +232,10 @@ function OrderTableRow({ order, userRole="CUSTOMER" }: { order: RentalOrder, use
               Paid
             </Badge>
           ) : (
-            <Badge variant="outline" className="text-muted-foreground text-[11px]">
+            <Badge
+              variant="outline"
+              className="text-muted-foreground text-[11px]"
+            >
               Unpaid
             </Badge>
           )}
@@ -219,32 +277,36 @@ function OrderTableRow({ order, userRole="CUSTOMER" }: { order: RentalOrder, use
 
       {/* Confirmation Parts */}
       {userRole === "ADMIN" && (
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the order{" "}
-              <span className="font-semibold text-foreground">
-                #{order.id.slice(0, 8)}
-              </span>.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={(e) => {
-                e.preventDefault();
-                handleDelete();
-              }}
-              disabled={isDeleting}
-              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-            >
-              {isDeleting ? "Deleting..." : "Confirm Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the
+                order{" "}
+                <span className="font-semibold text-foreground">
+                  #{order.id.slice(0, 8)}
+                </span>
+                .
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDelete();
+                }}
+                disabled={isDeleting}
+                className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+              >
+                {isDeleting ? "Deleting..." : "Confirm Delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       )}
     </>
   );
