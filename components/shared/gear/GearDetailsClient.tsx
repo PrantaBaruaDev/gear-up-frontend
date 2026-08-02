@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { IGearItemQuery } from "@/lib/types/gear-items-type";
+import { IGearItemList } from "@/lib/types/gear-items-type";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,17 +18,15 @@ import {
   ArrowLeft
 } from "lucide-react";
 import Link from "next/link";
-import { RentNowButton } from "@/components/RentNowButton"; // Ensure correct import path
+import { RentNowButton } from "@/components/RentNowButton"; 
 
 interface GearDetailsClientProps {
-  gear: IGearItemQuery;
+  gear: IGearItemList;
 }
 
 export default function GearDetailsClient({ gear }: GearDetailsClientProps) {
-  // Quantity State
   const [itemQuantity, setItemQuantity] = useState<number>(1);
 
-  // Safely fallback values
   const itemId = gear.id || "";
   const categoryName = gear.category?.name || "General";
   const providerName = gear.provider?.name || "Verified Provider";

@@ -1,11 +1,11 @@
+import { NavbarProps } from "@/lib/types/users-type";
 import { logout } from "@/service/logout";
-import { NavbarProps } from "@/lib/types/types";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export const useUserMenuAction = () => {
     const router = useRouter()
-    const handleUserMenuAction = async (action: string, user?: NavbarProps["user"]["data"]) => {
+    const handleUserMenuAction = async (action: string, user?: NavbarProps["user"]) => {
 
         if(action === "logout"){
             await logout();
@@ -15,6 +15,10 @@ export const useUserMenuAction = () => {
 
         if(action === "checkout"){
             router.push("/checkout");
+        }
+
+        if(action === "profile"){
+            router.push("/profile");
         }
         
         if(action === "dashboard"){

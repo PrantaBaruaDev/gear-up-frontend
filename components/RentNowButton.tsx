@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/useCartStore";
 import { Button } from "@/components/ui/button";
-import { Zap, Loader2, ShoppingCart } from "lucide-react";
+import { Loader2, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 
@@ -46,7 +46,6 @@ export function RentNowButton({
     try {
       setIsLoading(true);
 
-      // 1. Add item to Zustand Cart with chosen or default (1) quantity
       addItem(
         {
           gearItemId: gearItem.id,
@@ -58,12 +57,12 @@ export function RentNowButton({
         quantity
       );
 
-      // 2. Toast Notification & Redirect to Checkout
       toast.success("Proceeding to Checkout", {
         description: `${gearItem.title} added (${quantity} unit${quantity > 1 ? "s" : ""}).`,
       });
 
-    //   router.push("/checkout");
+      router.push("/checkout");
+      setIsLoading(false);
     } catch (error) {
       toast.error("Error", {
         description: "Could not proceed to checkout. Please try again.",
@@ -81,7 +80,6 @@ export function RentNowButton({
       {isLoading ? (
         <Loader2 className="h-5 w-5 animate-spin" />
       ) : (
-        // <Zap className="h-5 w-5 fill-current" />
         <ShoppingCart className="w-5 h-5 mr-2" />
       )}
       {isAvailable ? buttonText : "Out of Stock"}

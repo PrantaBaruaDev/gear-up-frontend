@@ -53,9 +53,6 @@ export async function createRentalOrder(
       rentalItems: payload.rentalItems,
     };
 
-    console.log("API Route Path: ", fetchPath);
-    console.log("Final Payload Data: ", payloadData);
-
     const response = await fetch(fetchPath, {
       method: "POST",
       headers: {
@@ -67,7 +64,6 @@ export async function createRentalOrder(
     });
 
     const resData = await response.json();
-    console.log("Backend Response: ", resData);
 
     if (!response.ok) {
       return {

@@ -1,8 +1,8 @@
 "use server";
 
-import { ICategories } from "@/lib/types/categories-type";
+import { IGearSearchParams } from "@/lib/types/gear-items-type";
 
-export const searchGearItemAction = async (prevState : ICategories , formData: FormData) => {
+export const searchGearItemAction = async (prevState : IGearSearchParams , formData: FormData) => {
 
     const category = formData.get("category")?.toString();
     const brand = formData.get("brand")?.toString();

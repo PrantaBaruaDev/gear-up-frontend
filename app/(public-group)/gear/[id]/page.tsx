@@ -15,5 +15,7 @@ export default async function GearDetailsPage({
     notFound();
   }
 
-  return <GearDetailsClient gear={response.data} />;
+  return (
+    <GearDetailsClient gear={response.data} />)
+  ;
 }

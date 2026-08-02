@@ -3,7 +3,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { ICategories } from "@/lib/types/categories-type";
+import { ICategoryItem } from "@/lib/types/categories-type";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 
 interface Props {
-  categories: ICategories[];
+  categories: ICategoryItem[];
 }
 
 export const PublicCategorySearchForm = ({ categories }: Props) => {
@@ -26,12 +26,10 @@ export const PublicCategorySearchForm = ({ categories }: Props) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Read initial states directly from searchParams without needing useEffect
-  // Default availableOnly to true if the URL param isn't set, otherwise match URL value
   const paramCategory = searchParams.get("category") || "";
   const paramAvailable = searchParams.has("availableOnly")
     ? searchParams.get("availableOnly") === "true"
-    : true; // Default is true when key is missing
+    : true; 
 
   const [selectedCategory, setSelectedCategory] = useState<string>(paramCategory);
   const [availableOnly, setAvailableOnly] = useState<boolean>(paramAvailable);

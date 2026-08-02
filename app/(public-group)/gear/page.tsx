@@ -1,36 +1,25 @@
 // app/(public-group)/gear/page.tsx
 import React from 'react';
-import { IGearItemList } from '@/lib/types/gear-items-type';
 import PublicGearItemListCard from '../_components/gear/PublicGearItemsCard';
 import { getPublicGearItems } from '../_action/PublicGearItemsAction';
-import { ICategories } from '@/lib/types/categories-type';
+import { ICategoryItem } from '@/lib/types/categories-type';
 import { PublicCategorySearchForm } from '../_components/gear/PublicCategorySearchForm';
-import { IGearSearchParams } from '@/lib/types/gear-items-type';
+import { IGearItemList, IGearSearchParams } from '@/lib/types/gear-items-type';
 
 interface PageProps {
   searchParams: IGearSearchParams;
 }
 
 const GearItemPublicList = async ({ searchParams }: PageProps) => {
-  const resolvedParams = await searchParams;
+  const resolvedParams = searchParams;
   const { GEAR_ITEMS, CATEGORIES } = await getPublicGearItems(resolvedParams);
 
-  // Extract Gear Items based on typical API envelope formats
-  const gearItems: IGearItemList[] = Array.isArray(GEAR_ITEMS)
-    ? GEAR_ITEMS
-    : Array.isArray(GEAR_ITEMS?.data)
+  const gearItems: IGearItemList[] = Array.isArray(GEAR_ITEMS?.data)
     ? GEAR_ITEMS.data
-    : Array.isArray(GEAR_ITEMS?.data?.data)
-    ? GEAR_ITEMS.data.data
     : [];
 
-  // Extract Categories based on typical API envelope formats
-  const categories: ICategories[] = Array.isArray(CATEGORIES)
-    ? CATEGORIES
-    : Array.isArray(CATEGORIES?.data)
+  const categories: ICategoryItem[] = Array.isArray(CATEGORIES?.data)
     ? CATEGORIES.data
-    : Array.isArray(CATEGORIES?.data?.data)
-    ? CATEGORIES.data.data
     : [];
 
   return (
