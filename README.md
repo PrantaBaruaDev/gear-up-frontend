@@ -1,9 +1,17 @@
 # GearUp Frontend Project
+
 **"Rent Sports & Outdoor Gear Instantly"**
 
 # Live URL:
+
 https://gear-up-frontend-ten.vercel.app
 
+# API Integration Document:
+
+[API\_INTEGRATION.md](./API_INTEGRATION.md)
+
+
+# Project Important Links:
 ```
 Frontend Repo    : https://github.com/PrantaBaruaDev/gear-up-frontend.git
 Live Frontend    : https://gear-up-frontend-ten.vercel.app
@@ -17,23 +25,22 @@ Admin Password   : 1234
 
 First, run the development server:
 
-```bash
+```
 npm run dev
 ```
+
 ## Roles & Permissions
 
 | Role | Description | Frontend UI Expectations |
-|------|-------------|-----------------|
+| --- | --- | --- |
 | **Customer** | Users who rent sports gear | Public browsing, interactive date-pickers for rentals, checkout/payment flow, order tracking dashboard, review submission. |
 | **Provider** | Gear vendors/rental shops | Protected provider dashboard, gear CRUD forms (with image upload UI), order management tables with status-update actions. |
 | **Admin** | Platform moderators | Protected admin dashboard, user management tables (suspend/activate actions), global platform statistics, content moderation UI. |
 
-
-
 ## Frontend Routes & API Integration
 
 | Next.js Route | Component/Feature | Backend API Consumption |
-|---------------|-------------------|-------------------------|
+| --- | --- | --- |
 | `/` | Home page with featured gear | `GET /api/gear` |
 | `/gear` | Browse & filter gear | `GET /api/gear`, `GET /api/categories` |
 | `/gear/[id]` | Gear details & rent CTA | `GET /api/gear/:id` |
