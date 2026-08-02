@@ -4,7 +4,10 @@ import { useState, useTransition } from "react";
 import { Trash2 } from "lucide-react";
 import ConfirmModal from "@/components/shared/confirm-delete";
 import { toast } from "sonner";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { deleteRentalOrders } from "../../_action/RentalOrdersAction";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 interface DeleteOrderButtonProps {
   id: string;
@@ -14,41 +17,57 @@ interface DeleteOrderButtonProps {
 export function DeleteOrderButton({ id, name }: DeleteOrderButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
 
-  const handleDelete = () => {
-    startTransition(async () => {
-      try {
-        const res = await deleteRentalOrders(id);
-        if (res?.success) {
-          toast.success(res.message || `Deleted "${name}" successfully.`);
-          setIsOpen(false);
-        } else {
-          toast.error(res?.message || "Failed to delete order.");
-        }
-      } catch (error) {
-        console.error("Delete Order Error:", error);
-        toast.error("An unexpected error occurred.");
+const handleDelete = async () => {
+    setIsDeleting(true);
+    console.log("Delete Button On click: ", id);
+
+    try {
+      // Execute the server action directly
+      const res = await deleteRentalOrders(id);
+
+      if (res?.success) {
+        toast.success(res.message || `Deleted "${name}" successfully.`);
+        setIsOpen(false); // Close modal on success
+        
+        // Refresh server component data
+        startTransition(() => {
+          router.refresh();
+        });
+      } else {
+        toast.error(res?.message || "Failed to delete order.");
       }
-    });
+    } catch (error) {
+      console.error("Delete Order Error:", error);
+      toast.error("An unexpected error occurred.");
+    } finally {
+      setIsDeleting(false);
+    }
   };
+
+const isLoading = isPending || isDeleting;
 
   return (
     <>
-      <button
-        type="button"
-        className="flex w-full items-center gap-2 px-2 py-1.5 text-sm text-destructive hover:bg-destructive/10 rounded-sm transition-colors cursor-pointer"
-        onClick={(e) => {
+      <DropdownMenuItem
+        className="text-destructive focus:text-destructive cursor-pointer"
+        onSelect={(e) => {
           e.preventDefault();
-          e.stopPropagation();
           setIsOpen(true);
         }}
       >
-        <Trash2 className="w-4 h-4" /> Delete Order
-      </button>
+        <Trash2 className="w-4 h-4 mr-2" />
+        <span>Delete Order</span>
+      </DropdownMenuItem>
 
       <ConfirmModal
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        // onClose={() => setIsOpen(false)}
+        onClose={() => {
+          if (!isLoading) setIsOpen(false);
+        }}
         onConfirm={handleDelete}
         title="Delete Order"
         description={
@@ -59,7 +78,7 @@ export function DeleteOrderButton({ id, name }: DeleteOrderButtonProps) {
           </>
         }
         confirmText="Yes, Delete"
-        isLoading={isPending}
+        isLoading={isLoading}
         variant="destructive"
       />
     </>
