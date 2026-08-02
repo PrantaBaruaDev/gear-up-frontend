@@ -1,9 +1,11 @@
-"use client"
+// import { ProviderGearItems } from "@/components/gear-items/ProviderGearItems";
 
-const AuthorDashboardPage = () => {
+import GearItemsPage from "../../_components/gear-items/GearItemPage";
+
+export default function ProviderDashboardPage() {
   return (
-    <div>Provider Dashboard Page</div>
-  )
+    <main className="p-6">
+      <GearItemsPage title="My Gear Collection" />
+    </main>
+  );
 }
-
-export default AuthorDashboardPage
