@@ -6,8 +6,7 @@ import { getMe } from "@/service/getMe";
 import { isAccessTokenExist } from "@/service/refreshToken";
 import { jwtUtils } from "@/utils/jwt";
 import { JwtPayload } from "jsonwebtoken";
-import { revalidatePath } from "next/cache";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 type RentalOrderState = {
     success : true;
@@ -58,11 +57,6 @@ export const getRentalOrders = async () => {
     const res = await fetch(fetchPath, {
       headers: {
         Cookie: `accessToken=${accessToken}`,
-      },
-      cache: "force-cache",
-      next: {
-        revalidate: 60 * 60 * 24, // 1 day
-        tags: ["my-rental-orders"],
       },
     });
 
@@ -129,11 +123,6 @@ export const getSingleRentalOrders = async (id: string) => {
       headers: {
         Cookie: `accessToken=${accessToken}`,
       },
-      cache: "force-cache",
-      next: {
-        revalidate: 60 * 60 * 24, // 1 day
-        tags: ["my-rental-orders"],
-      },
     });
 
     if (!res.ok) {
@@ -189,30 +178,32 @@ export const deleteRentalOrders = async (id: string) => {
         };
     }
 
-    const res = await fetch(fetchPath, {
+    // Removed cache options for DELETE operation
+    const res = await fetch(`${process.env.BACKEND_API_URL}/api/admin/rentals/${id}`, {
       method: "DELETE",
       headers: {
+        "Content-Type": "application/json",
         Cookie: `accessToken=${accessToken}`,
-      },
-      cache: "force-cache",
-      next: {
-        revalidate: 60 * 60 * 24, // 1 day
-        tags: ["my-rental-orders"],
       },
     });
 
     if (!res.ok) {
       return {
         success: false,
-        message: `Failed to delete orders (${res.status})`,
+        statusCode: 400,
+        message: `Failed to delete order (${res.status})`,
         data: [],
       };
     }
 
     const result = await res.json();
-    return result;
+
+    revalidatePath("/dashboard/admin/orders"); 
+    
+    return { success: true, message: "Order deleted successfully." };
+
   } catch (error) {
-    console.error("Error fetching rental orders:", error);
+    console.error("Error deleting rental order:", error);
     return {
       success: false,
       message: "Something went wrong while deleting orders.",

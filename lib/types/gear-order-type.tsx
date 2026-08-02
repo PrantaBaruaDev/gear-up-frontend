@@ -1,4 +1,4 @@
-import { GearItem, IGearItemList } from "./gear-items-type";
+import { GearItem } from "./gear-items-type";
 import { Payment } from "./payment-type";
 import { IUserQuery } from "./users-type";
 
@@ -11,19 +11,6 @@ export const OrderStatus = {
 } as const
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
-
-// export interface GearItem {
-//   id: string;
-//   title: string;
-//   description: string;
-//   brand: string;
-//   pricePerDay: string;
-//   stock: number;
-//   availableStock: number;
-//   categoryId: string;
-//   providerId: string;
-//   provider: Provider;
-// }
 
 export interface RentalItem {
   id: string;
