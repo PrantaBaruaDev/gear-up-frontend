@@ -11,9 +11,7 @@ export interface ICategoryItem {
   id: string;
   name: string;
   createdAt?: string | Date;
-  updatedAt?: string | Date;
 }
-
 export interface CategoryItemState<T = ICategoryItem | ICategoryItem[] | null> {
   success: boolean;
   statusCode: number;

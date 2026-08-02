@@ -5,7 +5,7 @@ export interface IGearSingleResponse {
   success: boolean;
   statusCode: number;
   message: string;
-  data: IGearItemQuery;
+  data: IGearItemList;
 }
 
 export interface IGearSearchParams {
@@ -14,22 +14,6 @@ export interface IGearSearchParams {
   minPrice: string,
   maxPrice: string,
   availableOnly: string
-}
-
-export interface IGearItemQuery {
-  id: string;
-  title: string;
-  description: string;
-  brand: string;
-  pricePerDay: string | number;
-  stock: number;
-  availableStock: number;
-  categoryId: string;
-  providerId: string;
-  createdAt: string;
-  updatedAt: string;
-  category: ICategoryItem;
-  provider: IUserQuery;
 }
 
 export type IGearItem = {
