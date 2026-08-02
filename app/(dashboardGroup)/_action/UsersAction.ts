@@ -1,16 +1,15 @@
 "use server";
 
 import { IUser } from "@/lib/types/users-type";
+import { getMe } from "@/service/getMe";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-// Helper to retrieve auth cookie/token
 async function getAccessToken() {
   const cookieStore = await cookies();
   return cookieStore.get("accessToken")?.value;
 }
 
-// Interface for update state responses
 export interface UserActionState {
   success: boolean;
   statusCode?: number;
@@ -18,10 +17,6 @@ export interface UserActionState {
   data?: IUser | null;
 }
 
-/**
- * 1. Update User Details (Role, Status, etc.)
- * PATCH /api/admin/users/:userId or /api/users/:userId
- */
 export async function updateUserStatusOrRole(
   userId: string,
   payload: { role?: string; status?: string }
@@ -74,9 +69,6 @@ export async function updateUserStatusOrRole(
   }
 }
 
-/**
- * 2. Convenience Helper: Toggle/Block User Status
- */
 export async function toggleBlockUser(
   userId: string,
   currentStatus: string
@@ -85,9 +77,6 @@ export async function toggleBlockUser(
   return updateUserStatusOrRole(userId, { status: newStatus });
 }
 
-/**
- * 3. Fetch All Users
- */
 export async function getAllUsers() {
   try {
     const accessToken = await getAccessToken();
@@ -113,10 +102,6 @@ export async function getAllUsers() {
   }
 }
 
-/**
- * 4. Single User Workaround (Since backend lacks GET /api/users/:id)
- * Fetches all users and finds the matching ID in memory.
- */
 export async function getUserById(userId: string) {
   try {
     const response = await getAllUsers();
@@ -144,6 +129,39 @@ export async function getUserById(userId: string) {
       message: "User found successfully.",
       data: singleUser,
     };
+  } catch (error) {
+    console.error("Get Single User Workaround Error:", error);
+    return {
+      success: false,
+      message: "An error occurred while fetching user profile.",
+      data: null,
+    };
+  }
+}
+
+export const getMyProfile = async() => {
+  try {
+    const response = await getMe();
+
+    if (!response.success) {
+      return {
+        success: false,
+        statusCode: 400,
+        message: "Failed to fetch users list.",
+        data: null,
+      };
+    }
+
+    if (!response.data) {
+      return {
+        success: false,
+        statusCode: 400,
+        message: "User not found.",
+        data: null,
+      };
+    }
+
+    return response;
   } catch (error) {
     console.error("Get Single User Workaround Error:", error);
     return {

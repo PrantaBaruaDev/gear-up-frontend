@@ -17,13 +17,12 @@ interface ConfirmModalProps {
   variant?: "destructive" | "default";
 }
 
-// Helper store to safely detect client-side mounting without cascading re-renders
 const emptySubscribe = () => () => {};
 function useIsClient() {
   return useSyncExternalStore(
     emptySubscribe,
-    () => true,  // Client snapshot
-    () => false  // Server snapshot
+    () => true, 
+    () => false 
   );
 }
 
@@ -40,7 +39,6 @@ export default function ConfirmModal({
 }: ConfirmModalProps) {
   const isClient = useIsClient();
 
-  // Lock scrolling when modal is active
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -84,7 +82,10 @@ export default function ConfirmModal({
           <Button
             type="button"
             variant="outline"
-            onClick={onClose}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
             disabled={isLoading}
           >
             {cancelText}
@@ -93,7 +94,11 @@ export default function ConfirmModal({
           <Button
             type="button"
             variant={variant}
-            onClick={onConfirm}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault(); 
+              onConfirm();
+            }}
             disabled={isLoading}
             className="gap-2"
           >

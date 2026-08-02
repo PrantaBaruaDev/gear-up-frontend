@@ -29,7 +29,9 @@ import { Separator } from "@/components/ui/separator";
 
 import { UserProfileActions } from "@/app/(dashboardGroup)/_components/users/user-profile-actions";
 import { getUserById } from "@/app/(dashboardGroup)/_action/UsersAction";
-import { IUser } from "@/lib/types/users-type";
+import { IUser} from "@/lib/types/users-type";
+import { getRoleBadge, getStatusBadge } from '@/app/(dashboardGroup)/_components/users/user-helper-function';
+import { getMe } from "@/service/getMe";
 
 interface PageProps {
   params: Promise<{
@@ -40,61 +42,11 @@ interface PageProps {
 export default async function AdminUserProfilePage({ params }: PageProps) {
   const { id } = await params;
   const result = await getUserById(id);
+  const userMe = await getMe();
 
   const user: IUser | null = result?.data || null;
 
-  // Helper for Role Badges
-  const getRoleBadge = (role: string) => {
-    switch (role?.toUpperCase()) {
-      case "ADMIN":
-        return (
-          <Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-100 gap-1 font-medium text-xs px-2.5 py-0.5">
-            <ShieldCheck className="w-3.5 h-3.5" /> Admin
-          </Badge>
-        );
-      case "PROVIDER":
-        return (
-          <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-100 gap-1 font-medium text-xs px-2.5 py-0.5">
-            <Building className="w-3.5 h-3.5" /> Provider
-          </Badge>
-        );
-      default:
-        return (
-          <Badge variant="outline" className="text-muted-foreground font-medium text-xs">
-            {role || "CUSTOMER"}
-          </Badge>
-        );
-    }
-  };
 
-  // Helper for Status Badges
-  const getStatusBadge = (status: string) => {
-    switch (status?.toUpperCase()) {
-      case "ACTIVE":
-        return (
-          <Badge
-            variant="outline"
-            className="border-emerald-500 text-emerald-600 bg-emerald-50/50 gap-1 font-medium text-xs px-2.5 py-0.5"
-          >
-            <UserCheck className="w-3.5 h-3.5" /> Active
-          </Badge>
-        );
-      case "BLOCKED":
-      case "INACTIVE":
-        return (
-          <Badge
-            variant="outline"
-            className="border-rose-500 text-rose-600 bg-rose-50/50 gap-1 font-medium text-xs px-2.5 py-0.5"
-          >
-            <UserX className="w-3.5 h-3.5" /> {status}
-          </Badge>
-        );
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
-  };
-
-  // Safe 404 / Empty View
   if (!result?.success || !user) {
     return (
       <div className="p-6 max-w-5xl mx-auto space-y-6">
@@ -153,12 +105,14 @@ export default async function AdminUserProfilePage({ params }: PageProps) {
 
             {/* Interactive Actions (Patch Role & Status) */}
             <div className="flex items-center justify-center sm:justify-end pb-1">
-              <UserProfileActions
-                userId={user.id}
-                userName={user.name}
-                currentRole={user.role}
-                currentStatus={user.status}
-              />
+              {(user.id !== userMe.data.id) &&(
+                <UserProfileActions
+                  userId={user.id}
+                  userName={user.name}
+                  currentRole={user.role}
+                  currentStatus={user.status}
+                />
+              )}
             </div>
           </div>
         </CardContent>

@@ -29,6 +29,7 @@ import { updateUserStatusOrRole } from "../../_action/UsersAction";
 
 interface UserRowActionsProps {
   userId: string;
+  userMe: string;
   userName: string;
   currentRole: string;
   currentStatus: string;
@@ -36,6 +37,7 @@ interface UserRowActionsProps {
 
 export function UserRowActions({
   userId,
+  userMe,
   userName,
   currentRole,
   currentStatus,
@@ -92,7 +94,9 @@ export function UserRowActions({
           </Link>
         </DropdownMenuItem>
 
-        {/* Role Selection Sub-menu */}
+      {/* Role Selection Sub-menu */}
+
+      {(userId !== userMe) && (
         <DropdownMenuSub>
           <DropdownMenuSubTrigger className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4" /> Change Role
@@ -127,10 +131,13 @@ export function UserRowActions({
             </DropdownMenuItem>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
+      )}
 
         <DropdownMenuSeparator />
+      
+      {/* Status Toggle Action */}
 
-        {/* Status Toggle Action */}
+      {(userId !== userMe) && (
         <DropdownMenuItem
           onClick={handleStatusToggle}
           className={`cursor-pointer ${
@@ -149,6 +156,7 @@ export function UserRowActions({
             </span>
           )}
         </DropdownMenuItem>
+      )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

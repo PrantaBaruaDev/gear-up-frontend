@@ -12,6 +12,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { updateUserStatusOrRole } from "../../_action/UsersAction";
+import { getMe } from "@/service/getMe";
+import { isAccessTokenExist } from "@/service/refreshToken";
+import { jwtUtils } from "@/utils/jwt";
 
 interface UserProfileActionsProps {
   userId: string;
@@ -29,6 +32,7 @@ export function UserProfileActions({
   const [isPending, startTransition] = useTransition();
 
   const handleRoleChange = (newRole: string) => {
+    if (newRole === currentRole) return;
     if (newRole === currentRole) return;
 
     startTransition(async () => {

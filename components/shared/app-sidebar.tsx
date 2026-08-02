@@ -34,14 +34,13 @@ import {
   Bell,
   ChevronRight,
   ChevronsUpDown,
-  ShoppingBag
 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import { NavbarProps } from "@/lib/types/types";
 import { useUserMenuAction } from "../_actions/handleUserMenuAction";
 import { NavGroup } from "@/lib/types/navbar-types";
 import { sidebarMenuItems } from "@/app/(dashboardGroup)/_config/customerSideBarItems";
+import { NavbarProps, Role } from "@/lib/types/users-type";
 
 const footerProfileItems = [
   { title: "Upgrade to Pro", url: "/upgrade-pro", icon: StarIcon, newLine: true },
@@ -54,14 +53,14 @@ export function AppSidebar({ user }: NavbarProps) {
 
   let navGroups: NavGroup[] = [];
 
-  switch (user?.data?.role) {
-    case "ADMIN":
+  switch (user.role) {
+    case Role.ADMIN:
       navGroups=sidebarMenuItems.ADMIN;
       break;
-    case "PROVIDER":
+    case Role.PROVIDER:
       navGroups=sidebarMenuItems.PROVIDER;
       break;
-    case "CUSTOMER":
+    case Role.CUSTOMER:
       navGroups=sidebarMenuItems.CUSTOMER;
       break;
     default:
@@ -151,10 +150,10 @@ export function AppSidebar({ user }: NavbarProps) {
                     <User className="h-8 w-8 rounded-full border p-1" />
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">
-                        {user?.data?.name ?? "User Name"}
+                        {user?.name ?? "User Name"}
                       </span>
                       <span className="truncate text-xs text-muted-foreground">
-                        {user?.data?.email ?? "user@example.com"}
+                        {user?.email ?? "user@example.com"}
                       </span>
                     </div>
                     <ChevronsUpDown />
@@ -171,10 +170,10 @@ export function AppSidebar({ user }: NavbarProps) {
                   <User className="h-8 w-8 rounded-full border p-1" />
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
-                      {user?.data?.name ?? "User Name"}
+                      {user?.name ?? "User Name"}
                     </span>
                     <span className="truncate text-xs text-muted-foreground">
-                      {user?.data?.email ?? "user@example.com"}
+                      {user?.email ?? "user@example.com"}
                     </span>
                   </div>
                 </div>
