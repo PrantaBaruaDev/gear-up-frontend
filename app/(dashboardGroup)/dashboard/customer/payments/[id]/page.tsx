@@ -3,7 +3,6 @@ import Link from "next/link";
 import { format } from "date-fns";
 import {
   ArrowLeft,
-  CreditCard,
   CheckCircle2,
   Clock,
   XCircle,
