@@ -22,7 +22,7 @@ type MyGearCardProps = {
   GearListData: IGearItemList;
 }
 
-const PublicGearItemListCard = ({ GearListData }: MyGearCardProps) => {
+const HomePublicGearItemListCard = ({ GearListData }: MyGearCardProps) => {
   const router = useRouter();
 
   const handleViewDetails = () => {
@@ -86,4 +86,4 @@ const PublicGearItemListCard = ({ GearListData }: MyGearCardProps) => {
   )
 }
 
-export default PublicGearItemListCard
+export default HomePublicGearItemListCard

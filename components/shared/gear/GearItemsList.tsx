@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { IGearItemList } from '@/lib/types/gear-items-type';
-import PublicGearItemListCard from '@/app/(public-group)/_components/gear/PublicGearItemsCard';
 import { getPublicGearItems } from '@/app/(public-group)/_action/PublicGearItemsAction';
+import HomePublicGearItemListCard from '@/app/(public-group)/_components/gear/HomePublicGearItemsCard';
 
 const GearItemList = async () => {
   const { GEAR_ITEMS } = await getPublicGearItems();
@@ -25,10 +25,11 @@ const GearItemList = async () => {
           No gear items match your filter criteria.
         </p>
       ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {gearItems.map((item) => (
-            <PublicGearItemListCard key={item.id} GearListData={item} />
-          ))}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          { gearItems.slice(0, 3).map((item) => (
+                <HomePublicGearItemListCard key={item.id} GearListData={item} />
+              ))
+          }
         </div>
       )}
     </div>

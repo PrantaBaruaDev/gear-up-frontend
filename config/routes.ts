@@ -1,7 +1,7 @@
 import { Role } from "@/lib/types/users-type";
 import { LayoutDashboardIcon, Settings, ShoppingBag, User } from "lucide-react";
 
-export const PUBLIC_ROUTES = ["/", "/gear", "/about", "/payment"];
+export const PUBLIC_ROUTES = ["/", "/gear", "/about", "/contact", "/faq", "/payment"];
 
 export const AUTH_ROUTES = ["/auth/login", "/auth/register"];
 
@@ -22,6 +22,8 @@ export const navItems = [
   { label: "Home", href: "/" },
   { label: "Gear", href: "/gear" },
   { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+  { label: "FAQ", href: "/faq" },
 ];
 
 // User menu items configuration
