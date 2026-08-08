@@ -45,7 +45,6 @@ export default async function Home() {
           <LandingNewsletter />
         </div>
       </main>
-      <LandingFooter />
     </div>
   );
 }
